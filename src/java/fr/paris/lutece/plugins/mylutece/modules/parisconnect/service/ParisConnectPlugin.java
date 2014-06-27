@@ -35,22 +35,23 @@ package fr.paris.lutece.plugins.mylutece.modules.parisconnect.service;
 
 import fr.paris.lutece.portal.service.plugin.PluginDefaultImplementation;
 
+
 /**
- * 
+ *
  * ParisConnectPlugin
  */
 public class ParisConnectPlugin extends PluginDefaultImplementation
 {
-	public static final String PLUGIN_NAME = "mylutece-parisconnect";
-	
-	/**
-	 * 
-	 *{@inheritDoc}
-	 */
-	@Override
-	public void init()
-	{
-		super.init();
-		ParisConnectService.getInstance(  ).init(  );
-	}
+    public static final String PLUGIN_NAME = "mylutece-parisconnect";
+
+    /**
+     *
+     *{@inheritDoc}
+     */
+    @Override
+    public void init(  )
+    {
+        super.init(  );
+        ParisConnectService.getInstance(  ).init(  );
+    }
 }

@@ -33,13 +33,13 @@
  */
 package fr.paris.lutece.plugins.mylutece.modules.parisconnect.authentication;
 
+import javax.security.auth.login.LoginException;
+import javax.servlet.http.HttpServletRequest;
+
 import fr.paris.lutece.plugins.mylutece.authentication.ExternalAuthentication;
 import fr.paris.lutece.plugins.mylutece.modules.parisconnect.service.ParisConnectPlugin;
 import fr.paris.lutece.plugins.mylutece.modules.parisconnect.service.ParisConnectService;
 import fr.paris.lutece.portal.service.security.LuteceUser;
-import java.security.Principal;
-import javax.security.auth.login.LoginException;
-import javax.servlet.http.HttpServletRequest;
 
 
 /**
@@ -93,8 +93,7 @@ public class ParisConnectAuthentication extends ExternalAuthentication
     public LuteceUser login( String strUserName, String strUserPassword, HttpServletRequest request )
         throws LoginException
     {
-        
-        return ParisConnectService.getInstance().doLogin( request , strUserName , strUserPassword );
+        return ParisConnectService.getInstance(  ).doLogin( request, strUserName, strUserPassword, this );
     }
 
     /**
@@ -146,42 +145,35 @@ public class ParisConnectAuthentication extends ExternalAuthentication
      */
     public LuteceUser getHttpAuthenticatedUser( HttpServletRequest request )
     {
-        Principal principal = request.getUserPrincipal(  );
-
-        if ( principal == null )
-        {
-            return null;
-        }
-
-        ParisConnectUser user = ParisConnectService.getInstance().getAuthenticatedUser( request );
+        ParisConnectUser user = ParisConnectService.getInstance(  ).getHttpAuthenticatedUser( request, this );
 
         return user;
     }
 
     /**
-     * 
+     *
      *{@inheritDoc}
      */
-	public String getIconUrl(  )
-	{
-		return null;
-	}
+    public String getIconUrl(  )
+    {
+        return null;
+    }
 
-	/**
-	 * 
-	 *{@inheritDoc}
-	 */
-	public String getName(  )
-	{
-		return ParisConnectPlugin.PLUGIN_NAME;
-	}
+    /**
+     *
+     *{@inheritDoc}
+     */
+    public String getName(  )
+    {
+        return ParisConnectPlugin.PLUGIN_NAME;
+    }
 
-	/**
-	 * 
-	 *{@inheritDoc}
-	 */
-	public String getPluginName(  )
-	{
-		return ParisConnectPlugin.PLUGIN_NAME;
-	}
+    /**
+     *
+     *{@inheritDoc}
+     */
+    public String getPluginName(  )
+    {
+        return ParisConnectPlugin.PLUGIN_NAME;
+    }
 }

@@ -46,10 +46,10 @@ import fr.paris.lutece.portal.service.security.LuteceUser;
 public class ParisConnectUser extends LuteceUser
 {
     /**
-     * Constructor
-     * @param strUserName The user's name
-     * @param authenticationService The authentication service that authenticates the user
-     */
+    * Constructor
+    * @param strUserName The user's name
+    * @param authenticationService The authentication service that authenticates the user
+    */
     public ParisConnectUser( String strUserName, LuteceAuthentication authenticationService )
     {
         super( strUserName, authenticationService );
