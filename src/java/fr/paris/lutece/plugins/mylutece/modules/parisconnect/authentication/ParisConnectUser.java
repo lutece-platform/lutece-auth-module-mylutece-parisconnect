@@ -38,13 +38,12 @@ import fr.paris.lutece.portal.service.security.LuteceUser;
 
 
 /**
- * This class implements The Lutece User in a Web Server authentication configuration
- * @author Mairie de Paris
- * @since Lutece v1.1
- * @version 1.1
+ * ParisConnect User
  */
 public class ParisConnectUser extends LuteceUser
 {
+    private String _strEmail;
+    
     /**
     * Constructor
     * @param strUserName The user's name
@@ -54,4 +53,27 @@ public class ParisConnectUser extends LuteceUser
     {
         super( strUserName, authenticationService );
     }
+    
+    /**
+     * Returns the Email
+     *
+     * @return The Email
+     */
+    @Override
+    public String getEmail()
+    {
+        return _strEmail;
+    }
+
+    /**
+     * Sets the Email
+     *
+     * @param strEmail The Email
+     */
+    public void setEmail(String strEmail)
+    {
+        _strEmail = strEmail;
+    }
+
+    
 }

@@ -33,27 +33,23 @@
  */
 package fr.paris.lutece.plugins.mylutece.modules.parisconnect.authentication;
 
-import javax.security.auth.login.LoginException;
-import javax.servlet.http.HttpServletRequest;
 
-import fr.paris.lutece.plugins.mylutece.authentication.ExternalAuthentication;
+import fr.paris.lutece.plugins.mylutece.authentication.PortalAuthentication;
 import fr.paris.lutece.plugins.mylutece.modules.parisconnect.service.ParisConnectPlugin;
 import fr.paris.lutece.plugins.mylutece.modules.parisconnect.service.ParisConnectService;
 import fr.paris.lutece.portal.service.security.LuteceUser;
+import javax.security.auth.login.LoginException;
+import javax.servlet.http.HttpServletRequest;
 
 
 /**
- * The Class provides an implementation of the PortalService interface based on
- * a Paris Connect authentication (Ex : Tomcat Realm).
- *
- * @author Mairie de Paris
- * @version 1.1
- *
- * @since Lutece v1.1
+ * ParisConnect Authentication
  */
-public class ParisConnectAuthentication extends ExternalAuthentication
+
+public class ParisConnectAuthentication extends PortalAuthentication
 {
-    private static final String AUTH_SERVICE_NAME = "Lutece Web Server based Authentication Service";
+    private static final String AUTH_SERVICE_NAME = "Lutece Paris Connect Authentication Service";
+    private static final String URL_ICON = "images/local/skin/plugins/mylutece/modules/parisconnect/parisconnect.png";
 
     /**
      * Constructor
@@ -66,6 +62,7 @@ public class ParisConnectAuthentication extends ExternalAuthentication
      * Gets the Authentification service name
      * @return The name of the authentication service
      */
+    @Override
     public String getAuthServiceName(  )
     {
         return AUTH_SERVICE_NAME;
@@ -76,6 +73,7 @@ public class ParisConnectAuthentication extends ExternalAuthentication
      * @param request The HTTP request
      * @return The type of authentication
      */
+    @Override
     public String getAuthType( HttpServletRequest request )
     {
         return HttpServletRequest.BASIC_AUTH;
@@ -90,6 +88,7 @@ public class ParisConnectAuthentication extends ExternalAuthentication
      * @return A LuteceUser object corresponding to the login
      * @throws LoginException The LoginException
      */
+    @Override
     public LuteceUser login( String strUserName, String strUserPassword, HttpServletRequest request )
         throws LoginException
     {
@@ -100,6 +99,7 @@ public class ParisConnectAuthentication extends ExternalAuthentication
      * This methods logout the user
      * @param user The user
      */
+    @Override
     public void logout( LuteceUser user )
     {
     }
@@ -109,6 +109,7 @@ public class ParisConnectAuthentication extends ExternalAuthentication
      *
      * @return An anonymous Lutece user
      */
+    @Override
     public LuteceUser getAnonymousUser(  )
     {
         /**@todo Impl?menter cette m?thode fr.paris.lutece.portal.service.security.PortalAuthentication*/
@@ -123,6 +124,7 @@ public class ParisConnectAuthentication extends ExternalAuthentication
      * @param strRole The role name
      * @return Returns true if the user is associated to the role, otherwise false
      */
+    @Override
     public boolean isUserInRole( LuteceUser user, HttpServletRequest request, String strRole )
     {
         return request.isUserInRole( strRole );
@@ -143,6 +145,7 @@ public class ParisConnectAuthentication extends ExternalAuthentication
      * @param request The HTTP request
      * @return Returns A Lutece User or null if there no user authenticated
      */
+    @Override
     public LuteceUser getHttpAuthenticatedUser( HttpServletRequest request )
     {
         ParisConnectUser user = ParisConnectService.getInstance(  ).getHttpAuthenticatedUser( request, this );
@@ -154,15 +157,17 @@ public class ParisConnectAuthentication extends ExternalAuthentication
      *
      *{@inheritDoc}
      */
+    @Override
     public String getIconUrl(  )
     {
-        return null;
+        return URL_ICON;
     }
 
     /**
      *
      *{@inheritDoc}
      */
+    @Override
     public String getName(  )
     {
         return ParisConnectPlugin.PLUGIN_NAME;
@@ -172,6 +177,7 @@ public class ParisConnectAuthentication extends ExternalAuthentication
      *
      *{@inheritDoc}
      */
+    @Override
     public String getPluginName(  )
     {
         return ParisConnectPlugin.PLUGIN_NAME;
