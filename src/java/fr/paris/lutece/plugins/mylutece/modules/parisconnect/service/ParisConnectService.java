@@ -33,22 +33,23 @@
  */
 package fr.paris.lutece.plugins.mylutece.modules.parisconnect.service;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
+import fr.paris.lutece.plugins.mylutece.authentication.MultiLuteceAuthentication;
+import fr.paris.lutece.plugins.mylutece.modules.parisconnect.authentication.ParisConnectAuthentication;
+import fr.paris.lutece.plugins.mylutece.modules.parisconnect.authentication.ParisConnectUser;
+import fr.paris.lutece.portal.service.security.LuteceUser;
+import fr.paris.lutece.portal.service.spring.SpringContextService;
+import fr.paris.lutece.portal.service.util.AppPropertiesService;
 
 import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
 
 import org.apache.commons.lang.StringUtils;
 
-import fr.paris.lutece.plugins.mylutece.authentication.MultiLuteceAuthentication;
-import fr.paris.lutece.plugins.mylutece.modules.parisconnect.authentication.ParisConnectAuthentication;
-import fr.paris.lutece.plugins.mylutece.modules.parisconnect.authentication.ParisConnectUser;
-import fr.paris.lutece.portal.service.security.LuteceUser;
-import fr.paris.lutece.portal.service.spring.SpringContextService;
-import fr.paris.lutece.portal.service.util.AppLogService;
-import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import org.apache.log4j.Logger;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+
 
 /**
  *
@@ -56,25 +57,25 @@ import org.apache.log4j.Logger;
  */
 public final class ParisConnectService
 {
-
     private static final String AUTHENTICATION_BEAN_NAME = "mylutece-parisconnect.authentication";
-    private static final ParisConnectService _singleton = new ParisConnectService();
+    private static final ParisConnectService _singleton = new ParisConnectService(  );
     private static final String PROPERTY_COOKIE_PARIS_CONNECT_NAME = "parisconnect.cookieName";
-    private static final String LOGGER_PARISCONNECT = "lutece.parisconnect";
-    
+    private static final String RESPONSE_STATUS = "status";
+    private static final String RESPONSE_DATA = "data";
+    private static final String CHECK_CONNEXION_FALSE = "false";
+    private static final String RESPONSE_STATUS_SUCCESS = "success";
     private static final String PCUSER_LASTNAME = "name";
     private static final String PCUSER_FIRSTNAME = "firstname";
     private static final String PCUSER_EMAIL = "email";
     private static final String PCUSER_NICKNAME = "pseudo";
     private static final String PCUSER_GENDER = "gender";
-    
-    private static final String COOKIE_PARIS_CONNECT_NAME = AppPropertiesService.getProperty(PROPERTY_COOKIE_PARIS_CONNECT_NAME);
-    private static Logger _logger = Logger.getLogger( LOGGER_PARISCONNECT );
+    private static final String COOKIE_PARIS_CONNECT_NAME = AppPropertiesService.getProperty( PROPERTY_COOKIE_PARIS_CONNECT_NAME );
+    private static Logger _logger = Logger.getLogger( Constants.LOGGER_PARISCONNECT );
 
     /**
      * Empty constructor
      */
-    private ParisConnectService()
+    private ParisConnectService(  )
     {
         // nothing
     }
@@ -84,7 +85,7 @@ public final class ParisConnectService
      *
      * @return the instance
      */
-    public static ParisConnectService getInstance()
+    public static ParisConnectService getInstance(  )
     {
         return _singleton;
     }
@@ -92,19 +93,19 @@ public final class ParisConnectService
     /**
      * Inits plugin. Registers authentication
      */
-    public void init()
+    public void init(  )
     {
-        ParisConnectAuthentication authentication = (ParisConnectAuthentication) SpringContextService.getPluginBean(ParisConnectPlugin.PLUGIN_NAME,
-                AUTHENTICATION_BEAN_NAME);
+        ParisConnectAuthentication authentication = (ParisConnectAuthentication) SpringContextService.getPluginBean( ParisConnectPlugin.PLUGIN_NAME,
+                AUTHENTICATION_BEAN_NAME );
 
-        if (authentication != null)
+        if ( authentication != null )
         {
-            MultiLuteceAuthentication.registerAuthentication(authentication);
+            MultiLuteceAuthentication.registerAuthentication( authentication );
         }
         else
         {
-            AppLogService.error(
-                    "ParisConnectAuthentication not found, please check your parisconnect_context.xml configuration");
+            _logger.error( 
+                "ParisConnectAuthentication not found, please check your parisconnect_context.xml configuration" );
         }
     }
 
@@ -116,33 +117,34 @@ public final class ParisConnectService
      * @param parisConnectAuthentication The authentication
      * @return The LuteceUser
      */
-    public ParisConnectUser doLogin(HttpServletRequest request, String strUserName, String strUserPassword,
-            ParisConnectAuthentication parisConnectAuthentication)
+    public ParisConnectUser doLogin( HttpServletRequest request, String strUserName, String strUserPassword,
+        ParisConnectAuthentication parisConnectAuthentication )
     {
-        String strResponse = ParisConnectAPIService.doLogin(request, strUserName, strUserPassword);
+        String strResponse = ParisConnectAPIService.doLogin( strUserName, strUserPassword );
 
         ParisConnectUser user = null;
 
-        if (strResponse != null)
+        if ( strResponse != null )
         {
-            JSONObject joObject = (JSONObject) JSONSerializer.toJSON(strResponse);
-            String strAuthenticationStatus = joObject.getString(ParisConnectAPIService.RESPONSE_STATUS);
+            JSONObject joObject = (JSONObject) JSONSerializer.toJSON( strResponse );
+            String strAuthenticationStatus = joObject.getString( RESPONSE_STATUS );
 
-            if ((strAuthenticationStatus != null)
-                    && strAuthenticationStatus.equals(ParisConnectAPIService.RESPONSE_STATUS_SUCCESS))
+            if ( ( strAuthenticationStatus != null ) && strAuthenticationStatus.equals( RESPONSE_STATUS_SUCCESS ) )
             {
-                JSONObject joObjectUser = joObject.getJSONObject(ParisConnectAPIService.RESPONSE_DATA);
+                JSONObject joObjectUser = joObject.getJSONObject( RESPONSE_DATA );
 
-                if ((joObjectUser != null) && joObjectUser.containsKey(ParisConnectAPIService.USER_UID)
-                        && !StringUtils.isEmpty(joObjectUser.getString(ParisConnectAPIService.USER_UID)))
+                if ( ( joObjectUser != null ) && joObjectUser.containsKey( ParisConnectAPIService.USER_UID ) &&
+                        !StringUtils.isEmpty( joObjectUser.getString( ParisConnectAPIService.USER_UID ) ) )
                 {
-                    String strUID = joObjectUser.getString(ParisConnectAPIService.USER_UID );
-                    _logger.debug( "ParisConnect : doLogin : Login OK - UID=" + strUID );
-                    user = new ParisConnectUser( strUID , parisConnectAuthentication);
-                    String strPCUID = joObjectUser.getString(ParisConnectAPIService.PCUID);
-                    _logger.debug( "ParisConnect : doLogin : get PCUID=" + strPCUID );
-                    fillUserData(user, ParisConnectAPIService.getUser(strPCUID));
+                    String strUID = joObjectUser.getString( ParisConnectAPIService.USER_UID );
+                    _logger.debug( "doLogin : Login OK - UID=" + strUID );
+                    user = new ParisConnectUser( strUID, parisConnectAuthentication );
 
+                    String strPCUID = joObjectUser.getString( ParisConnectAPIService.PCUID );
+                    _logger.debug( "doLogin : get PCUID=" + strPCUID );
+                    fillUserData( user, ParisConnectAPIService.getUser( strPCUID ) );
+                    // Set a connexion cookie to let the user access other PC Services without sign in
+                    ParisConnectAPIService.setConnectionCookie( strUID );
                 }
             }
         }
@@ -156,47 +158,57 @@ public final class ParisConnectService
      * @param parisConnectAuthentication The Authentication
      * @return The LuteceUser
      */
-    public ParisConnectUser getHttpAuthenticatedUser(HttpServletRequest request,
-            ParisConnectAuthentication parisConnectAuthentication)
+    public ParisConnectUser getHttpAuthenticatedUser( HttpServletRequest request,
+        ParisConnectAuthentication parisConnectAuthentication )
     {
         ParisConnectUser user = null;
-        Cookie[] cookies = request.getCookies();
-        String strParisConnectCookie = null;
 
-        if (cookies != null)
+        String strParisConnectCookie = getConnectionCookie( request );
+
+        if ( strParisConnectCookie != null )
         {
-            for (Cookie cookie : cookies)
-            {
-                if (cookie.getName().equals(COOKIE_PARIS_CONNECT_NAME))
-                {
-                    strParisConnectCookie = cookie.getValue();
-                    _logger.debug( "ParisConnect : getHttpAuthenticatedUser : cookie found - value=" + strParisConnectCookie );
-                }
-            }
-        }
+            String strResponse = ParisConnectAPIService.checkConnectionCookie( strParisConnectCookie );
 
-        if (strParisConnectCookie != null)
-        {
-            String strResponse = ParisConnectAPIService.checkConnectionCookie(request, strParisConnectCookie);
-
-            if (!StringUtils.isEmpty(strResponse) && (!strResponse.equals(ParisConnectAPIService.CHECK_CONNEXION_FALSE)))
+            if ( !StringUtils.isEmpty( strResponse ) && ( !strResponse.equals( CHECK_CONNEXION_FALSE ) ) )
             {
-                user = new ParisConnectUser(strResponse, parisConnectAuthentication);
+                String strUID = strResponse;
+                user = new ParisConnectUser( strUID, parisConnectAuthentication );
+                fillUserData( user, ParisConnectAPIService.getUser( strUID ) );
             }
         }
 
         return user;
     }
 
-
-    private void fillUserData(ParisConnectUser user, String strUserData)
+    private String getConnectionCookie( HttpServletRequest request )
     {
-        JSONObject joObject = (JSONObject) JSONSerializer.toJSON(strUserData);
+        Cookie[] cookies = request.getCookies(  );
+        String strParisConnectCookie = null;
 
-        user.setUserInfo(LuteceUser.NAME_FAMILY, joObject.getString( PCUSER_LASTNAME));
-        user.setUserInfo(LuteceUser.NAME_GIVEN, joObject.getString( PCUSER_FIRSTNAME));
-        user.setUserInfo(LuteceUser.GENDER, joObject.getString( PCUSER_GENDER));
-        user.setUserInfo(LuteceUser.NAME_NICKNAME, joObject.getString( PCUSER_NICKNAME));
+        if ( cookies != null )
+        {
+            for ( Cookie cookie : cookies )
+            {
+                if ( cookie.getName(  ).equals( COOKIE_PARIS_CONNECT_NAME ) )
+                {
+                    strParisConnectCookie = cookie.getValue(  );
+                    _logger.debug( "getHttpAuthenticatedUser : cookie '" + COOKIE_PARIS_CONNECT_NAME +
+                        "' found - value=" + strParisConnectCookie );
+                }
+            }
+        }
+
+        return strParisConnectCookie;
+    }
+
+    private void fillUserData( ParisConnectUser user, String strUserData )
+    {
+        JSONObject joObject = (JSONObject) JSONSerializer.toJSON( strUserData );
+
+        user.setUserInfo( LuteceUser.NAME_FAMILY, joObject.getString( PCUSER_LASTNAME ) );
+        user.setUserInfo( LuteceUser.NAME_GIVEN, joObject.getString( PCUSER_FIRSTNAME ) );
+        user.setUserInfo( LuteceUser.GENDER, joObject.getString( PCUSER_GENDER ) );
+        user.setUserInfo( LuteceUser.NAME_NICKNAME, joObject.getString( PCUSER_NICKNAME ) );
         user.setEmail( joObject.getString( PCUSER_EMAIL ) );
     }
 }

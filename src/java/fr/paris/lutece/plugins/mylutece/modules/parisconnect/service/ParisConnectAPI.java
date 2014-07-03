@@ -34,10 +34,15 @@
 package fr.paris.lutece.plugins.mylutece.modules.parisconnect.service;
 
 import fr.paris.lutece.portal.service.util.AppLogService;
+import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.util.httpaccess.HttpAccess;
 import fr.paris.lutece.util.httpaccess.HttpAccessException;
 import fr.paris.lutece.util.url.UrlItem;
+
+import org.apache.log4j.Logger;
+
 import java.util.Map;
+
 
 /**
  * ParisConnectAPI
@@ -46,6 +51,9 @@ public class ParisConnectAPI
 {
     private static final String PARAMETER_API_ID = "api_id";
     private static final String PARAMETER_SECRET_KEY = "secret_key";
+    private static final String PROPERTY_API_CALL_DEBUG = "mylutece-parisconnect.api.debug";
+    private static Logger _logger = Logger.getLogger( Constants.LOGGER_PARISCONNECT );
+    private static boolean _bDebug = AppPropertiesService.getPropertyBoolean( PROPERTY_API_CALL_DEBUG, false );
 
     // Variables declarations 
     private String _strName;
@@ -58,7 +66,7 @@ public class ParisConnectAPI
      *
      * @return The Name
      */
-    public String getName()
+    public String getName(  )
     {
         return _strName;
     }
@@ -68,7 +76,7 @@ public class ParisConnectAPI
      *
      * @param strName The Name
      */
-    public void setName(String strName)
+    public void setName( String strName )
     {
         _strName = strName;
     }
@@ -78,7 +86,7 @@ public class ParisConnectAPI
      *
      * @return The Url
      */
-    public String getUrl()
+    public String getUrl(  )
     {
         return _strUrl;
     }
@@ -88,7 +96,7 @@ public class ParisConnectAPI
      *
      * @param strUrl The Url
      */
-    public void setUrl(String strUrl)
+    public void setUrl( String strUrl )
     {
         _strUrl = strUrl;
     }
@@ -98,7 +106,7 @@ public class ParisConnectAPI
      *
      * @return The ApiId
      */
-    public String getApiId()
+    public String getApiId(  )
     {
         return _strApiId;
     }
@@ -108,7 +116,7 @@ public class ParisConnectAPI
      *
      * @param strApiId The ApiId
      */
-    public void setApiId(String strApiId)
+    public void setApiId( String strApiId )
     {
         _strApiId = strApiId;
     }
@@ -118,7 +126,7 @@ public class ParisConnectAPI
      *
      * @return The SecretKey
      */
-    public String getSecretKey()
+    public String getSecretKey(  )
     {
         return _strSecretKey;
     }
@@ -128,11 +136,11 @@ public class ParisConnectAPI
      *
      * @param strSecretKey The SecretKey
      */
-    public void setSecretKey(String strSecretKey)
+    public void setSecretKey( String strSecretKey )
     {
         _strSecretKey = strSecretKey;
     }
-    
+
     /**
      * Call a Method of the API
      * @param strMethod The method name
@@ -151,14 +159,35 @@ public class ParisConnectAPI
         try
         {
             strResponse = httpAccess.doPost( url.getUrl(  ), mapParameters );
+
+            if ( _bDebug )
+            {
+                _logger.debug( "API call : " + getCallUrl( url.getUrl(  ), mapParameters ) );
+            }
         }
         catch ( HttpAccessException ex )
         {
-            AppLogService.error( "ParisConnectAPI : Error calling method '" + strMethod + "' :" +
-                ex.getMessage(  ), ex );
+            _logger.error( "Error calling method '" + strMethod + " - " + ex.getMessage(  ), ex );
         }
 
         return strResponse;
     }
 
+    /**
+     * Build the URL
+     * @param strUrl The base URL
+     * @param mapParameters Parameters
+     * @return The full URL
+     */
+    private String getCallUrl( String strUrl, Map<String, String> mapParameters )
+    {
+        UrlItem url = new UrlItem( strUrl );
+
+        for ( String strKey : mapParameters.keySet(  ) )
+        {
+            url.addParameter( strKey, mapParameters.get( strKey ) );
+        }
+
+        return url.getUrl(  );
+    }
 }

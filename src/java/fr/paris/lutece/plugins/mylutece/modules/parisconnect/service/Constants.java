@@ -31,47 +31,18 @@
  *
  * License 1.0
  */
-package fr.paris.lutece.plugins.mylutece.modules.parisconnect.authentication;
-
-import fr.paris.lutece.portal.service.security.LuteceAuthentication;
-import fr.paris.lutece.portal.service.security.LuteceUser;
+package fr.paris.lutece.plugins.mylutece.modules.parisconnect.service;
 
 
 /**
- * ParisConnect User
+ * Constants
  */
-public class ParisConnectUser extends LuteceUser
+public final class Constants
 {
-    private String _strEmail;
+    public static final String LOGGER_PARISCONNECT = "lutece.parisconnect";
 
-    /**
-    * Constructor
-    * @param strUserName The user's name
-    * @param authenticationService The authentication service that authenticates the user
-    */
-    public ParisConnectUser( String strUserName, LuteceAuthentication authenticationService )
+    /** Private constructor */
+    private Constants(  )
     {
-        super( strUserName, authenticationService );
-    }
-
-    /**
-     * Returns the Email
-     *
-     * @return The Email
-     */
-    @Override
-    public String getEmail(  )
-    {
-        return _strEmail;
-    }
-
-    /**
-     * Sets the Email
-     *
-     * @param strEmail The Email
-     */
-    public void setEmail( String strEmail )
-    {
-        _strEmail = strEmail;
     }
 }

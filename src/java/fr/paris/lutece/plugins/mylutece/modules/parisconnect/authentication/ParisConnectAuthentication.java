@@ -33,23 +33,27 @@
  */
 package fr.paris.lutece.plugins.mylutece.modules.parisconnect.authentication;
 
-
 import fr.paris.lutece.plugins.mylutece.authentication.PortalAuthentication;
 import fr.paris.lutece.plugins.mylutece.modules.parisconnect.service.ParisConnectPlugin;
 import fr.paris.lutece.plugins.mylutece.modules.parisconnect.service.ParisConnectService;
 import fr.paris.lutece.portal.service.security.LuteceUser;
+import fr.paris.lutece.portal.service.util.AppPropertiesService;
+
 import javax.security.auth.login.LoginException;
+
 import javax.servlet.http.HttpServletRequest;
 
 
 /**
  * ParisConnect Authentication
  */
-
 public class ParisConnectAuthentication extends PortalAuthentication
 {
     private static final String AUTH_SERVICE_NAME = "Lutece Paris Connect Authentication Service";
     private static final String URL_ICON = "images/local/skin/plugins/mylutece/modules/parisconnect/parisconnect.png";
+    private static final String PROPERTY_CREATE_ACCOUNT_URL = "mylutece-parisconnect.url.createAccount.page";
+    private static final String PROPERTY_LOST_PASSWORD_URL = "mylutece-parisconnect.url.lostPassword.page";
+    private static final String PROPERTY_VIEW_ACCOUNT_URL = "mylutece-parisconnect.url.viewAccount.page";
 
     /**
      * Constructor
@@ -112,9 +116,7 @@ public class ParisConnectAuthentication extends PortalAuthentication
     @Override
     public LuteceUser getAnonymousUser(  )
     {
-        /**@todo Impl?menter cette m?thode fr.paris.lutece.portal.service.security.PortalAuthentication*/
-        throw new java.lang.UnsupportedOperationException( 
-            "La methode getAnonymousUser() n'est pas encore implementee." );
+        throw new java.lang.UnsupportedOperationException( "getAnonymousUser() is not implemented." );
     }
 
     /**
@@ -154,7 +156,6 @@ public class ParisConnectAuthentication extends PortalAuthentication
     }
 
     /**
-     *
      *{@inheritDoc}
      */
     @Override
@@ -164,7 +165,6 @@ public class ParisConnectAuthentication extends PortalAuthentication
     }
 
     /**
-     *
      *{@inheritDoc}
      */
     @Override
@@ -174,7 +174,6 @@ public class ParisConnectAuthentication extends PortalAuthentication
     }
 
     /**
-     *
      *{@inheritDoc}
      */
     @Override
@@ -182,4 +181,33 @@ public class ParisConnectAuthentication extends PortalAuthentication
     {
         return ParisConnectPlugin.PLUGIN_NAME;
     }
+    
+ 
+    /**
+     *{@inheritDoc}
+     */
+    @Override
+    public String getNewAccountPageUrl()
+    {
+        return AppPropertiesService.getProperty( PROPERTY_CREATE_ACCOUNT_URL );
+    }
+
+    /**
+     *{@inheritDoc}
+     */
+    @Override
+    public String getLostPasswordPageUrl()
+    {
+        return AppPropertiesService.getProperty( PROPERTY_LOST_PASSWORD_URL );
+    }
+
+    /**
+     *{@inheritDoc}
+     */
+    @Override
+    public String getViewAccountPageUrl()
+    {
+        return AppPropertiesService.getProperty( PROPERTY_VIEW_ACCOUNT_URL );
+    }
+
 }
