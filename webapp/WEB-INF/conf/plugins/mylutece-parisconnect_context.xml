@@ -12,10 +12,10 @@
           <value>https://accounts.paris.fr/api/api/account/</value>
       </property>
       <property name="apiId">
-          <value>accounts</value>
+          <value>(your API id)</value>
       </property>
       <property name="secretKey">
-          <value>accounts75</value>
+          <value>(your API secret key)</value>
       </property>
   </bean>
    
@@ -27,10 +27,10 @@
           <value>https://connect.paris.fr/api/api/users/</value>
       </property>
       <property name="apiId">
-          <value>openam</value>
+          <value>(your API id)</value>
       </property>
       <property name="secretKey">
-          <value>openam75!</value>
+          <value>(your API secret key)</value>
       </property>
   </bean>
    
