@@ -42,7 +42,7 @@ import java.util.Map;
 /**
  * ParisConnect API Service
  */
-public class ParisConnectAPIService
+public final class ParisConnectAPIService
 {
     public static final String USER_UID = "uid";
     public static final String PCUID = "pcuid";
@@ -57,6 +57,17 @@ public class ParisConnectAPIService
     private static final ParisConnectAPI _accountAPI = SpringContextService.getBean( "mylutece-parisconnect.apiAccount" );
     private static final ParisConnectAPI _usersAPI = SpringContextService.getBean( "mylutece-parisconnect.apiUsers" );
 
+    /** Private constructor */ 
+    private ParisConnectAPIService()
+    {
+    }
+    
+    /**
+     * 
+     * @param strUserName
+     * @param strUserPassword
+     * @return 
+     */
     static String doLogin( String strUserName, String strUserPassword )
     {
         Map<String, String> mapParameters = new HashMap<String, String>(  );

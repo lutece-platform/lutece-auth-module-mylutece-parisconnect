@@ -33,15 +33,13 @@
  */
 package fr.paris.lutece.plugins.mylutece.modules.parisconnect.service;
 
-import fr.paris.lutece.portal.service.util.AppLogService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.util.httpaccess.HttpAccess;
 import fr.paris.lutece.util.httpaccess.HttpAccessException;
 import fr.paris.lutece.util.url.UrlItem;
-
-import org.apache.log4j.Logger;
-
 import java.util.Map;
+import java.util.Map.Entry;
+import org.apache.log4j.Logger;
 
 
 /**
@@ -147,7 +145,7 @@ public class ParisConnectAPI
      * @param mapParameters Parameters
      * @return The string returned by the API
      */
-    public String callMethod( String strMethod, Map mapParameters )
+    public String callMethod( String strMethod, Map<String, String> mapParameters )
     {
         HttpAccess httpAccess = new HttpAccess(  );
         UrlItem url = new UrlItem( _strUrl + strMethod );
@@ -183,9 +181,9 @@ public class ParisConnectAPI
     {
         UrlItem url = new UrlItem( strUrl );
 
-        for ( String strKey : mapParameters.keySet(  ) )
+        for ( Entry<String, String> entry : mapParameters.entrySet() )
         {
-            url.addParameter( strKey, mapParameters.get( strKey ) );
+            url.addParameter( entry.getKey(), entry.getValue() );
         }
 
         return url.getUrl(  );
