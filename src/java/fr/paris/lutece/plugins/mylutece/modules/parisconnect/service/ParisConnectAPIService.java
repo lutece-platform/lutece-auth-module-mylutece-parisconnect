@@ -63,10 +63,10 @@ public final class ParisConnectAPIService
     }
     
     /**
-     * 
-     * @param strUserName
-     * @param strUserPassword
-     * @return 
+     * Process login
+     * @param strUserName The User's name
+     * @param strUserPassword The User's password
+     * @return The response provided by the API in JSON format
      */
     static String doLogin( String strUserName, String strUserPassword )
     {
@@ -78,6 +78,11 @@ public final class ParisConnectAPIService
         return _accountAPI.callMethod( METHOD_DO_LOGIN, mapParameters );
     }
 
+    /**
+     * Checks the connection cookie
+     * @param strConnectionCookie The 'account' cookie value
+     * @return The UID if the cookie is valid otherwyse false
+     */
     static String checkConnectionCookie( String strConnectionCookie )
     {
         Map<String, String> mapParameters = new HashMap<String, String>(  );
@@ -86,14 +91,23 @@ public final class ParisConnectAPIService
         return _accountAPI.callMethod( METHOD_CHECK_CONNECTION_COOKIE, mapParameters );
     }
 
-    static String setConnectionCookie( String strUID )
+    /**
+     * Set a connection cookie for the domain
+     * @param strUID The User ID
+     */
+    static void setConnectionCookie( String strUID )
     {
         Map<String, String> mapParameters = new HashMap<String, String>(  );
         mapParameters.put( USER_UID, strUID );
 
-        return _accountAPI.callMethod( METHOD_SET_COOKIE, mapParameters );
+        _accountAPI.callMethod( METHOD_SET_COOKIE, mapParameters );
     }
 
+    /**
+     * Get user infos
+     * @param strPCUID The UserID
+     * @return The response provided by the API in JSON format
+     */
     static String getUser( String strPCUID )
     {
         Map<String, String> mapParameters = new HashMap<String, String>(  );

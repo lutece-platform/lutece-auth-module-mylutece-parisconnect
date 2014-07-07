@@ -1,12 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document>
-	<properties>
-		<title>Module mylutece parisconnect</title>
-	</properties>
-	<body>
-		<section name="Module mylutece parisconnect">
-			<subsection name="Introduction">
-			</subsection>
-		</section>
-	</body>
+    <properties>
+        <title>Module mylutece ParisConnect</title>
+    </properties>
+    <body>
+        <section name="Module mylutece ParisConnect">
+            <subsection name="Introduction">
+                <img src="images/parisconnect.jpeg" />
+
+                
+                Ce module permet l'authentification des utilisateurs via le système
+                propriétaire de la Ville de Paris dénommé ParisConnect.
+            </subsection>
+            <subsection name="Configuration">
+                Les identifiants et mots de passe pour accéder aux API <b>account</b> et 
+                <b>users</b> de ParisConnect sont à configurer dans le fichier
+                <code>WEB-INF/conf/plugins/mylutece-parisconnect_context.xml</code>.
+            </subsection>
+        </section>
+    </body>
 </document>
