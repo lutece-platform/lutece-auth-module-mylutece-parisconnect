@@ -69,6 +69,10 @@ public final class ParisConnectService
     private static final String PCUSER_EMAIL = "email";
     private static final String PCUSER_NICKNAME = "pseudo";
     private static final String PCUSER_GENDER = "gender";
+    private static final String PCUSER_CITY = "city";
+    private static final String PCUSER_ZIPCODE = "zip_code";
+    private static final String PCUSER_VERIFIED = "is_verified";
+    
     private static final String COOKIE_PARIS_CONNECT_NAME = AppPropertiesService.getProperty( PROPERTY_COOKIE_PARIS_CONNECT_NAME );
     private static Logger _logger = Logger.getLogger( Constants.LOGGER_PARISCONNECT );
 
@@ -180,6 +184,11 @@ public final class ParisConnectService
         return user;
     }
 
+    /**
+     * Extract the value of the connection cookie
+     * @param request The HTTP request
+     * @return The cookie's value
+     */
     private String getConnectionCookie( HttpServletRequest request )
     {
         Cookie[] cookies = request.getCookies(  );
@@ -201,6 +210,11 @@ public final class ParisConnectService
         return strParisConnectCookie;
     }
 
+    /**
+     * Fill user's data
+     * @param user The User
+     * @param strUserData Data in JSON format
+     */
     private void fillUserData( ParisConnectUser user, String strUserData )
     {
         JSONObject joObject = (JSONObject) JSONSerializer.toJSON( strUserData );
@@ -209,6 +223,12 @@ public final class ParisConnectService
         user.setUserInfo( LuteceUser.NAME_GIVEN, joObject.getString( PCUSER_FIRSTNAME ) );
         user.setUserInfo( LuteceUser.GENDER, joObject.getString( PCUSER_GENDER ) );
         user.setUserInfo( LuteceUser.NAME_NICKNAME, joObject.getString( PCUSER_NICKNAME ) );
+        user.setUserInfo( LuteceUser.HOME_INFO_POSTAL_CITY, joObject.getString( PCUSER_CITY ) );
+        user.setUserInfo( LuteceUser.HOME_INFO_POSTAL_POSTALCODE, joObject.getString( PCUSER_ZIPCODE ) );
         user.setEmail( joObject.getString( PCUSER_EMAIL ) );
+        String strVerified = joObject.getString( PCUSER_VERIFIED );
+        boolean bVerified = "1".equals( strVerified );
+        user.setVerified( bVerified );
+ 
     }
 }

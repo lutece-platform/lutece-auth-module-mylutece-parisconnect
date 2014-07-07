@@ -35,6 +35,7 @@ package fr.paris.lutece.plugins.mylutece.modules.parisconnect.authentication;
 
 import fr.paris.lutece.portal.service.security.LuteceAuthentication;
 import fr.paris.lutece.portal.service.security.LuteceUser;
+import java.util.ArrayList;
 
 
 /**
@@ -42,7 +43,9 @@ import fr.paris.lutece.portal.service.security.LuteceUser;
  */
 public class ParisConnectUser extends LuteceUser
 {
+    public String ROLE_VERIFIED = "verified";
     private String _strEmail;
+    private boolean _bVerified;
 
     /**
     * Constructor
@@ -74,4 +77,33 @@ public class ParisConnectUser extends LuteceUser
     {
         _strEmail = strEmail;
     }
+    
+    /**
+     * Returns the Verified status
+     *
+     * @return True if is verified
+     */
+    public boolean isVerified(  )
+    {
+        return _bVerified;
+    }
+
+    /**
+     * Sets the Verified status
+     *
+     * @param bVerified The Verified status
+     */
+    public void setVerified( boolean bVerified )
+    {
+        if( bVerified )
+        {
+            ArrayList<String> listRoles = new ArrayList<String>();
+            listRoles.add( ROLE_VERIFIED );
+            addRoles( listRoles );
+        }
+        _bVerified = bVerified;
+    }
+    
+    
+    
 }
