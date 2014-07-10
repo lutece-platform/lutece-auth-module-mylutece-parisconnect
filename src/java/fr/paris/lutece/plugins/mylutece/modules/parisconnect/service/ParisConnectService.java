@@ -72,6 +72,8 @@ public final class ParisConnectService
     private static final String PCUSER_CITY = "city";
     private static final String PCUSER_ZIPCODE = "zip_code";
     private static final String PCUSER_VERIFIED = "is_verified";
+    private static final String PCUSER_BIRTHDATE = "birthday";
+    private static final String PCUSER_ADDRESS = "location";
     
     private static final String COOKIE_PARIS_CONNECT_NAME = AppPropertiesService.getProperty( PROPERTY_COOKIE_PARIS_CONNECT_NAME );
     private static Logger _logger = Logger.getLogger( Constants.LOGGER_PARISCONNECT );
@@ -225,6 +227,8 @@ public final class ParisConnectService
         user.setUserInfo( LuteceUser.NAME_NICKNAME, joObject.getString( PCUSER_NICKNAME ) );
         user.setUserInfo( LuteceUser.HOME_INFO_POSTAL_CITY, joObject.getString( PCUSER_CITY ) );
         user.setUserInfo( LuteceUser.HOME_INFO_POSTAL_POSTALCODE, joObject.getString( PCUSER_ZIPCODE ) );
+        user.setUserInfo( LuteceUser.HOME_INFO_POSTAL_STREET, joObject.getString( PCUSER_ADDRESS ) );
+//        user.setUserInfo( LuteceUser.BDATE, joObject.getString( PCUSER_BIRTHDATE ) );
         user.setEmail( joObject.getString( PCUSER_EMAIL ) );
         String strVerified = joObject.getString( PCUSER_VERIFIED );
         boolean bVerified = "1".equals( strVerified );
