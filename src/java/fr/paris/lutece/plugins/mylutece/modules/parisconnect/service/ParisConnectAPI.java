@@ -37,9 +37,15 @@ import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.util.httpaccess.HttpAccess;
 import fr.paris.lutece.util.httpaccess.HttpAccessException;
 import fr.paris.lutece.util.url.UrlItem;
+
+import net.sf.json.JSONObject;
+import net.sf.json.JSONSerializer;
+
+import org.apache.log4j.Logger;
+
 import java.util.Map;
 import java.util.Map.Entry;
-import org.apache.log4j.Logger;
+import net.sf.json.JSONException;
 
 
 /**
@@ -50,6 +56,8 @@ public class ParisConnectAPI
     private static final String PARAMETER_API_ID = "api_id";
     private static final String PARAMETER_SECRET_KEY = "secret_key";
     private static final String PROPERTY_API_CALL_DEBUG = "mylutece-parisconnect.api.debug";
+    private static final String KEY_ERROR = "ERR";
+    private static final String KEY_ERROR_MSG = "str";
     private static Logger _logger = Logger.getLogger( Constants.LOGGER_PARISCONNECT );
     private static boolean _bDebug = AppPropertiesService.getPropertyBoolean( PROPERTY_API_CALL_DEBUG, false );
 
@@ -58,6 +66,7 @@ public class ParisConnectAPI
     private String _strUrl;
     private String _strApiId;
     private String _strSecretKey;
+    private Map _map;
 
     /**
      * Returns the Name
@@ -140,12 +149,49 @@ public class ParisConnectAPI
     }
 
     /**
+     * Returns the Map
+     *
+     * @return The Map
+     */
+    public Map getMap(  )
+    {
+        return _map;
+    }
+
+    /**
+     * Sets the Map
+     *
+     * @param map The Map
+     */
+    public void setMap( Map map )
+    {
+        _map = map;
+    }
+    
+    /**
      * Call a Method of the API
      * @param strMethod The method name
      * @param mapParameters Parameters
      * @return The string returned by the API
+     * @throws ParisConnectAPIException if an error occurs
      */
     public String callMethod( String strMethod, Map<String, String> mapParameters )
+        throws ParisConnectAPIException
+    {
+        return callMethod( strMethod, mapParameters, true );
+    }
+    
+
+    /**
+     * Call a Method of the API
+     * @param strMethod The method name
+     * @param mapParameters Parameters
+     * @param bJSON Is JSON output
+     * @return The string returned by the API
+     * @throws ParisConnectAPIException if an error occurs
+     */
+    public String callMethod( String strMethod, Map<String, String> mapParameters , boolean bJSON )
+        throws ParisConnectAPIException
     {
         HttpAccess httpAccess = new HttpAccess(  );
         UrlItem url = new UrlItem( _strUrl + strMethod );
@@ -167,8 +213,43 @@ public class ParisConnectAPI
         {
             _logger.error( "Error calling method '" + strMethod + " - " + ex.getMessage(  ), ex );
         }
-
+        
+        boolean bJSONArray = strResponse.startsWith( "[{" );
+        
+        // Responses are not always in JSON format and Array should not be checked for errors
+        if( bJSON && !bJSONArray )
+        {
+            checkJSONforErrors( strResponse );
+        }
+        
         return strResponse;
+    }
+    
+    /**
+     * Ckecks JSON for errors
+     * @param strResponse The response in JSON format
+     * @throws ParisConnectAPIException if an error occurs
+     */
+    private void checkJSONforErrors( String strResponse ) throws ParisConnectAPIException
+    {
+        JSONObject joObject = (JSONObject) JSONSerializer.toJSON( strResponse );
+
+        if ( joObject.containsKey( KEY_ERROR ) )
+        {
+            String strError = joObject.getString( KEY_ERROR );
+            String strMessage;
+            // ERR value is not always a JSON object
+            try 
+            {
+                JSONObject joError = (JSONObject) JSONSerializer.toJSON( strError );
+                strMessage = joError.getString( KEY_ERROR_MSG );
+            }
+            catch( JSONException e )
+            {
+                strMessage = strError;
+            }
+            throw new ParisConnectAPIException( strMessage );
+        }
     }
 
     /**
@@ -181,9 +262,9 @@ public class ParisConnectAPI
     {
         UrlItem url = new UrlItem( strUrl );
 
-        for ( Entry<String, String> entry : mapParameters.entrySet() )
+        for ( Entry<String, String> entry : mapParameters.entrySet(  ) )
         {
-            url.addParameter( entry.getKey(), entry.getValue() );
+            url.addParameter( entry.getKey(  ), entry.getValue(  ) );
         }
 
         return url.getUrl(  );

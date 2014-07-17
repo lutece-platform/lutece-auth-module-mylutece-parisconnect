@@ -47,6 +47,8 @@ import org.apache.commons.lang.StringUtils;
 
 import org.apache.log4j.Logger;
 
+import java.util.logging.Level;
+
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
@@ -74,7 +76,6 @@ public final class ParisConnectService
     private static final String PCUSER_VERIFIED = "is_verified";
     private static final String PCUSER_BIRTHDATE = "birthday";
     private static final String PCUSER_ADDRESS = "location";
-    
     private static final String COOKIE_PARIS_CONNECT_NAME = AppPropertiesService.getProperty( PROPERTY_COOKIE_PARIS_CONNECT_NAME );
     private static Logger _logger = Logger.getLogger( Constants.LOGGER_PARISCONNECT );
 
@@ -126,33 +127,41 @@ public final class ParisConnectService
     public ParisConnectUser doLogin( HttpServletRequest request, String strUserName, String strUserPassword,
         ParisConnectAuthentication parisConnectAuthentication )
     {
-        String strResponse = ParisConnectAPIService.doLogin( strUserName, strUserPassword );
-
+        String strResponse;
         ParisConnectUser user = null;
 
-        if ( strResponse != null )
+        try
         {
-            JSONObject joObject = (JSONObject) JSONSerializer.toJSON( strResponse );
-            String strAuthenticationStatus = joObject.getString( RESPONSE_STATUS );
+            strResponse = ParisConnectAPIService.doLogin( strUserName, strUserPassword );
 
-            if ( ( strAuthenticationStatus != null ) && strAuthenticationStatus.equals( RESPONSE_STATUS_SUCCESS ) )
+            if ( strResponse != null )
             {
-                JSONObject joObjectUser = joObject.getJSONObject( RESPONSE_DATA );
+                JSONObject joObject = (JSONObject) JSONSerializer.toJSON( strResponse );
+                String strAuthenticationStatus = joObject.getString( RESPONSE_STATUS );
 
-                if ( ( joObjectUser != null ) && joObjectUser.containsKey( ParisConnectAPIService.USER_UID ) &&
-                        !StringUtils.isEmpty( joObjectUser.getString( ParisConnectAPIService.USER_UID ) ) )
+                if ( ( strAuthenticationStatus != null ) && strAuthenticationStatus.equals( RESPONSE_STATUS_SUCCESS ) )
                 {
-                    String strUID = joObjectUser.getString( ParisConnectAPIService.USER_UID );
-                    _logger.debug( "doLogin : Login OK - UID=" + strUID );
-                    user = new ParisConnectUser( strUID, parisConnectAuthentication );
+                    JSONObject joObjectUser = joObject.getJSONObject( RESPONSE_DATA );
 
-                    String strPCUID = joObjectUser.getString( ParisConnectAPIService.PCUID );
-                    _logger.debug( "doLogin : get PCUID=" + strPCUID );
-                    fillUserData( user, ParisConnectAPIService.getUser( strPCUID ) );
-                    // Set a connexion cookie to let the user access other PC Services without sign in
-                    ParisConnectAPIService.setConnectionCookie( strUID );
+                    if ( ( joObjectUser != null ) && joObjectUser.containsKey( ParisConnectAPIService.USER_UID ) &&
+                            !StringUtils.isEmpty( joObjectUser.getString( ParisConnectAPIService.USER_UID ) ) )
+                    {
+                        String strUID = joObjectUser.getString( ParisConnectAPIService.USER_UID );
+                        _logger.debug( "doLogin : Login OK - UID=" + strUID );
+                        user = new ParisConnectUser( strUID, parisConnectAuthentication );
+
+                        String strPCUID = joObjectUser.getString( ParisConnectAPIService.PCUID );
+                        _logger.debug( "doLogin : get PCUID=" + strPCUID );
+                        fillUserData( user, ParisConnectAPIService.getUser( strPCUID ) );
+                        // Set a connexion cookie to let the user access other PC Services without sign in
+                        ParisConnectAPIService.setConnectionCookie( strUID );
+                    }
                 }
             }
+        }
+        catch ( ParisConnectAPIException ex )
+        {
+            _logger.warn( ex.getMessage(  ) );
         }
 
         return user;
@@ -173,13 +182,20 @@ public final class ParisConnectService
 
         if ( strParisConnectCookie != null )
         {
-            String strResponse = ParisConnectAPIService.checkConnectionCookie( strParisConnectCookie );
-
-            if ( !StringUtils.isEmpty( strResponse ) && ( !strResponse.equals( CHECK_CONNEXION_FALSE ) ) )
+            try
             {
-                String strUID = strResponse;
-                user = new ParisConnectUser( strUID, parisConnectAuthentication );
-                fillUserData( user, ParisConnectAPIService.getUser( strUID ) );
+                String strResponse = ParisConnectAPIService.checkConnectionCookie( strParisConnectCookie );
+
+                if ( !StringUtils.isEmpty( strResponse ) && ( !strResponse.equals( CHECK_CONNEXION_FALSE ) ) )
+                {
+                    String strUID = strResponse;
+                    user = new ParisConnectUser( strUID, parisConnectAuthentication );
+                    fillUserData( user, ParisConnectAPIService.getUser( strUID ) );
+                }
+            }
+            catch ( ParisConnectAPIException ex )
+            {
+                _logger.warn( ex.getMessage(  ) );
             }
         }
 
@@ -228,11 +244,12 @@ public final class ParisConnectService
         user.setUserInfo( LuteceUser.HOME_INFO_POSTAL_CITY, joObject.getString( PCUSER_CITY ) );
         user.setUserInfo( LuteceUser.HOME_INFO_POSTAL_POSTALCODE, joObject.getString( PCUSER_ZIPCODE ) );
         user.setUserInfo( LuteceUser.HOME_INFO_POSTAL_STREET, joObject.getString( PCUSER_ADDRESS ) );
-//        user.setUserInfo( LuteceUser.BDATE, joObject.getString( PCUSER_BIRTHDATE ) );
+        String strBirthDate = ParisConnectAPIService.getMetadataValue( user.getName(), "birthday" );
+        user.setUserInfo( LuteceUser.BDATE, strBirthDate );
         user.setEmail( joObject.getString( PCUSER_EMAIL ) );
+
         String strVerified = joObject.getString( PCUSER_VERIFIED );
         boolean bVerified = "1".equals( strVerified );
         user.setVerified( bVerified );
- 
     }
 }

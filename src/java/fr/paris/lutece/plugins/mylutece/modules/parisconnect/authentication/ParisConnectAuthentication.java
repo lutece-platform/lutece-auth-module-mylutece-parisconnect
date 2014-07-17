@@ -181,13 +181,12 @@ public class ParisConnectAuthentication extends PortalAuthentication
     {
         return ParisConnectPlugin.PLUGIN_NAME;
     }
-    
- 
+
     /**
      *{@inheritDoc}
      */
     @Override
-    public String getNewAccountPageUrl()
+    public String getNewAccountPageUrl(  )
     {
         return AppPropertiesService.getProperty( PROPERTY_CREATE_ACCOUNT_URL );
     }
@@ -196,7 +195,7 @@ public class ParisConnectAuthentication extends PortalAuthentication
      *{@inheritDoc}
      */
     @Override
-    public String getLostPasswordPageUrl()
+    public String getLostPasswordPageUrl(  )
     {
         return AppPropertiesService.getProperty( PROPERTY_LOST_PASSWORD_URL );
     }
@@ -205,9 +204,8 @@ public class ParisConnectAuthentication extends PortalAuthentication
      *{@inheritDoc}
      */
     @Override
-    public String getViewAccountPageUrl()
+    public String getViewAccountPageUrl(  )
     {
         return AppPropertiesService.getProperty( PROPERTY_VIEW_ACCOUNT_URL );
     }
-
 }
