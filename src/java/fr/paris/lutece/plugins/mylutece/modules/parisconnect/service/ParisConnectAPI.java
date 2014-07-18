@@ -264,7 +264,14 @@ public class ParisConnectAPI
 
         for ( Entry<String, String> entry : mapParameters.entrySet(  ) )
         {
-            url.addParameter( entry.getKey(  ), entry.getValue(  ) );
+            if( entry.getKey().equals( PARAMETER_SECRET_KEY ))
+            {
+                url.addParameter( entry.getKey(), "************" );
+            }
+            else
+            {
+                url.addParameter( entry.getKey(), entry.getValue() );
+            }
         }
 
         return url.getUrl(  );
