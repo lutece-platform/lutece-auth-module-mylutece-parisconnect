@@ -33,24 +33,22 @@
  */
 package fr.paris.lutece.plugins.mylutece.modules.parisconnect.service;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import net.sf.json.JSONObject;
+import net.sf.json.JSONSerializer;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+
 import fr.paris.lutece.plugins.mylutece.authentication.MultiLuteceAuthentication;
 import fr.paris.lutece.plugins.mylutece.modules.parisconnect.authentication.ParisConnectAuthentication;
 import fr.paris.lutece.plugins.mylutece.modules.parisconnect.authentication.ParisConnectUser;
 import fr.paris.lutece.portal.service.security.LuteceUser;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
-
-import net.sf.json.JSONObject;
-import net.sf.json.JSONSerializer;
-
-import org.apache.commons.lang.StringUtils;
-
-import org.apache.log4j.Logger;
-
-import java.util.logging.Level;
-
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
 
 
 /**
@@ -60,8 +58,12 @@ import javax.servlet.http.HttpServletRequest;
 public final class ParisConnectService
 {
     private static final String AUTHENTICATION_BEAN_NAME = "mylutece-parisconnect.authentication";
-    private static final ParisConnectService _singleton = new ParisConnectService(  );
+    private static  ParisConnectService _singleton;
     private static final String PROPERTY_COOKIE_PARIS_CONNECT_NAME = "parisconnect.cookieName";
+    private static final String PROPERTY_COOKIE_PARIS_CONNECT_DOMAIN = "parisconnect.cookieDomain";
+    private static final String PROPERTY_COOKIE_PARIS_CONNECT_PATH= "parisconnect.cookiePath";
+    private static final String PROPERTY_COOKIE_PARIS_CONNECT_MAX_AGE= "parisconnect.cookieMaxAge";
+    private static final String PROPERTY_COOKIE_PARIS_CONNECT_MAX_SECURE ="parisconnect.cookieSecure";
     private static final String RESPONSE_STATUS = "status";
     private static final String RESPONSE_DATA = "data";
     private static final String CHECK_CONNEXION_FALSE = "false";
@@ -76,7 +78,12 @@ public final class ParisConnectService
     private static final String PCUSER_VERIFIED = "is_verified";
     private static final String PCUSER_BIRTHDATE = "birthday";
     private static final String PCUSER_ADDRESS = "location";
-    private static final String COOKIE_PARIS_CONNECT_NAME = AppPropertiesService.getProperty( PROPERTY_COOKIE_PARIS_CONNECT_NAME );
+    private static String COOKIE_PARIS_CONNECT_NAME ;
+    private static String COOKIE_PARIS_CONNECT_DOMAIN ;
+    private static String COOKIE_PARIS_CONNECT_PATH ;
+    private static int COOKIE_PARIS_CONNECT_MAX_AGE;
+    private static boolean COOKIE_PARIS_CONNECT_SECURE;
+   
     private static Logger _logger = Logger.getLogger( Constants.LOGGER_PARISCONNECT );
 
     /**
@@ -94,6 +101,16 @@ public final class ParisConnectService
      */
     public static ParisConnectService getInstance(  )
     {
+    	if(_singleton == null)
+    	{
+    	   _singleton= new ParisConnectService(  );
+    	   COOKIE_PARIS_CONNECT_NAME = AppPropertiesService.getProperty( PROPERTY_COOKIE_PARIS_CONNECT_NAME );
+    	   COOKIE_PARIS_CONNECT_DOMAIN = AppPropertiesService.getProperty( PROPERTY_COOKIE_PARIS_CONNECT_DOMAIN );
+    	   COOKIE_PARIS_CONNECT_PATH = AppPropertiesService.getProperty( PROPERTY_COOKIE_PARIS_CONNECT_PATH );
+    	   COOKIE_PARIS_CONNECT_MAX_AGE = AppPropertiesService.getPropertyInt( PROPERTY_COOKIE_PARIS_CONNECT_MAX_AGE,60 * 30 );
+    	   COOKIE_PARIS_CONNECT_SECURE = AppPropertiesService.getPropertyBoolean( PROPERTY_COOKIE_PARIS_CONNECT_MAX_SECURE, true );
+    	}
+    	
         return _singleton;
     }
 
@@ -154,7 +171,7 @@ public final class ParisConnectService
                         _logger.debug( "doLogin : get PCUID=" + strPCUID );
                         fillUserData( user, ParisConnectAPIService.getUser( strPCUID ) );
                         // Set a connexion cookie to let the user access other PC Services without sign in
-                        ParisConnectAPIService.setConnectionCookie( strUID );
+                        //ParisConnectAPIService.setConnectionCookie( strUID );
                     }
                 }
             }
@@ -178,19 +195,19 @@ public final class ParisConnectService
     {
         ParisConnectUser user = null;
 
-        String strParisConnectCookie = getConnectionCookie( request );
+        String strPCUID = getConnectionCookie( request );
 
-        if ( strParisConnectCookie != null )
+        if ( strPCUID != null )
         {
             try
             {
-                String strResponse = ParisConnectAPIService.checkConnectionCookie( strParisConnectCookie );
+                String strResponse = ParisConnectAPIService.checkConnectionCookie( strPCUID );
 
                 if ( !StringUtils.isEmpty( strResponse ) && ( !strResponse.equals( CHECK_CONNEXION_FALSE ) ) )
                 {
                     String strUID = strResponse;
                     user = new ParisConnectUser( strUID, parisConnectAuthentication );
-                    fillUserData( user, ParisConnectAPIService.getUser( strUID ) );
+                    fillUserData( user, ParisConnectAPIService.getUser( strPCUID ) );
                 }
             }
             catch ( ParisConnectAPIException ex )
@@ -207,7 +224,7 @@ public final class ParisConnectService
      * @param request The HTTP request
      * @return The cookie's value
      */
-    private String getConnectionCookie( HttpServletRequest request )
+    public  String getConnectionCookie( HttpServletRequest request )
     {
         Cookie[] cookies = request.getCookies(  );
         String strParisConnectCookie = null;
@@ -227,6 +244,30 @@ public final class ParisConnectService
 
         return strParisConnectCookie;
     }
+    
+    /**
+     * set a paris connect cokkie in the HttpServletResponse
+     * @param strUid the user uid
+     * @param response The HTTP response
+     */
+    public  void setConnectionCookie(String strUid,HttpServletResponse response)
+    {
+    	// set a connexion cookie to let the user access other PC Services without sign in
+		 String strPcuid= ParisConnectAPIService.setConnectionCookie( strUid );
+		 
+		 if ( !StringUtils.isEmpty( strPcuid ) && ( !strPcuid.equals( CHECK_CONNEXION_FALSE ) ) )
+         {
+		 
+		    Cookie parisConnectCookie = new Cookie(COOKIE_PARIS_CONNECT_NAME, strPcuid.replace("\"",""));
+		    parisConnectCookie.setDomain(COOKIE_PARIS_CONNECT_DOMAIN);
+		    parisConnectCookie.setSecure(COOKIE_PARIS_CONNECT_SECURE);  
+		    parisConnectCookie.setMaxAge(COOKIE_PARIS_CONNECT_MAX_AGE); 
+		    parisConnectCookie.setPath(COOKIE_PARIS_CONNECT_PATH); 
+
+		    response.addCookie(parisConnectCookie);
+		 }
+		 
+      }
 
     /**
      * Fill user's data
@@ -252,4 +293,9 @@ public final class ParisConnectService
         boolean bVerified = "1".equals( strVerified );
         user.setVerified( bVerified );
     }
+    
+    
+    
+    
+    
 }

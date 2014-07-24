@@ -104,26 +104,28 @@ public final class ParisConnectAPIService
         Map<String, String> mapParameters = new HashMap<String, String>(  );
         mapParameters.put( PARAMETER_CONNECTION_COOKIE, strConnectionCookie );
 
-        return _accountAPI.callMethod( METHOD_CHECK_CONNECTION_COOKIE, mapParameters );
+        return _accountAPI.callMethod( METHOD_CHECK_CONNECTION_COOKIE, mapParameters,false );
     }
 
     /**
      * Set a connection cookie for the domain
      * @param strUID The User ID
+     * @return the Pcuid
      */
-    static void setConnectionCookie( String strUID )
+    static String setConnectionCookie( String strUID )
     {
         Map<String, String> mapParameters = new HashMap<String, String>(  );
         mapParameters.put( USER_UID, strUID );
-
+        String strPcuid=null;
         try
         {
-            _accountAPI.callMethod( METHOD_SET_COOKIE, mapParameters , false );
+        	strPcuid=_accountAPI.callMethod( METHOD_SET_COOKIE, mapParameters , false );
         }
         catch ( ParisConnectAPIException ex )
         {
             _logger.error( ex.getMessage(  ) );
         }
+        return strPcuid;
     }
 
     /**
