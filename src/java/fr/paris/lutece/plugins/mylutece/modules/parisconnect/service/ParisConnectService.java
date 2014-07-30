@@ -227,7 +227,7 @@ public final class ParisConnectService
 
                 if ( !StringUtils.isEmpty( strResponse ) && ( !strResponse.equals( CHECK_CONNEXION_FALSE ) ) )
                 {
-                    String strUID = strResponse;
+                    String strUID = strResponse.replace("\"", "");
                     user = new ParisConnectUser( strUID, parisConnectAuthentication );
                     //save paris connect cookie value
                     user.setPCUID(strPCUID);

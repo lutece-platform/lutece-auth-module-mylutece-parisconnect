@@ -94,7 +94,7 @@ public class ParisConnectLuteceFilter implements Filter
        {
         	String strPcuid=ParisConnectService.getInstance().getConnectionCookie(request);
         	//if the request does not contains the Paris connect connection cookie 
-        	if(strPcuid == null)
+        	if( strPcuid == null || strPcuid!= ((ParisConnectUser)user).getPCUID() )
         	{
         		ParisConnectService.getInstance().setConnectionCookie(((ParisConnectUser)user).getPCUID(), (HttpServletResponse)response);
         	}
