@@ -45,6 +45,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import fr.paris.lutece.plugins.mylutece.modules.parisconnect.authentication.ParisConnectAuthentication;
+import fr.paris.lutece.plugins.mylutece.modules.parisconnect.authentication.ParisConnectUser;
 import fr.paris.lutece.plugins.mylutece.modules.parisconnect.service.ParisConnectService;
 import fr.paris.lutece.portal.service.security.LuteceUser;
 import fr.paris.lutece.portal.service.security.SecurityService;
@@ -91,12 +92,11 @@ public class ParisConnectLuteceFilter implements Filter
         }
         else
        {
-        	
-        	
         	String strPcuid=ParisConnectService.getInstance().getConnectionCookie(request);
+        	//if the request does not contains the Paris connect connection cookie 
         	if(strPcuid == null)
         	{
-        		ParisConnectService.getInstance().setConnectionCookie(user.getName(), (HttpServletResponse)response);
+        		ParisConnectService.getInstance().setConnectionCookie(((ParisConnectUser)user).getPCUID(), (HttpServletResponse)response);
         	}
        	
        }

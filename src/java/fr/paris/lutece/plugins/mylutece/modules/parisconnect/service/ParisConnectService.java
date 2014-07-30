@@ -166,12 +166,14 @@ public final class ParisConnectService
                         String strUID = joObjectUser.getString( ParisConnectAPIService.USER_UID );
                         _logger.debug( "doLogin : Login OK - UID=" + strUID );
                         user = new ParisConnectUser( strUID, parisConnectAuthentication );
-
+                    
                         String strPCUID = joObjectUser.getString( ParisConnectAPIService.PCUID );
+                        
                         _logger.debug( "doLogin : get PCUID=" + strPCUID );
+                        //save paris connect cookie value
+                        user.setPCUID(strPCUID);
                         fillUserData( user, ParisConnectAPIService.getUser( strPCUID ) );
-                        // Set a connexion cookie to let the user access other PC Services without sign in
-                        //ParisConnectAPIService.setConnectionCookie( strUID );
+                       
                     }
                 }
             }
@@ -182,6 +184,26 @@ public final class ParisConnectService
         }
 
         return user;
+    }
+    
+    
+    /**
+     * Logout to paris connect
+     * @param user the ParisConnectUser
+     */
+    public void doLogout(ParisConnectUser user)
+    {
+    	
+    	try
+        {
+          
+    		ParisConnectAPIService.doDisconnect(user.getPCUID());
+         }
+        catch ( ParisConnectAPIException ex )
+        {
+            _logger.warn( ex.getMessage(  ) );
+        }
+    	
     }
 
     /**
@@ -207,6 +229,8 @@ public final class ParisConnectService
                 {
                     String strUID = strResponse;
                     user = new ParisConnectUser( strUID, parisConnectAuthentication );
+                    //save paris connect cookie value
+                    user.setPCUID(strPCUID);
                     fillUserData( user, ParisConnectAPIService.getUser( strPCUID ) );
                 }
             }
@@ -247,27 +271,24 @@ public final class ParisConnectService
     
     /**
      * set a paris connect cokkie in the HttpServletResponse
-     * @param strUid the user uid
+     * @param strPCUID the user PCUID
      * @param response The HTTP response
      */
-    public  void setConnectionCookie(String strUid,HttpServletResponse response)
+    public  void setConnectionCookie(String strPCUID,HttpServletResponse response)
     {
     	// set a connexion cookie to let the user access other PC Services without sign in
-		 String strPcuid= ParisConnectAPIService.setConnectionCookie( strUid );
+		 Cookie parisConnectCookie = new Cookie(COOKIE_PARIS_CONNECT_NAME, strPCUID);
+		 parisConnectCookie.setDomain(COOKIE_PARIS_CONNECT_DOMAIN);
+		 parisConnectCookie.setSecure(COOKIE_PARIS_CONNECT_SECURE);  
+		 parisConnectCookie.setMaxAge(COOKIE_PARIS_CONNECT_MAX_AGE); 
+		 parisConnectCookie.setPath(COOKIE_PARIS_CONNECT_PATH); 
 		 
-		 if ( !StringUtils.isEmpty( strPcuid ) && ( !strPcuid.equals( CHECK_CONNEXION_FALSE ) ) )
-         {
+		 response.addCookie(parisConnectCookie);
 		 
-		    Cookie parisConnectCookie = new Cookie(COOKIE_PARIS_CONNECT_NAME, strPcuid.replace("\"",""));
-		    parisConnectCookie.setDomain(COOKIE_PARIS_CONNECT_DOMAIN);
-		    parisConnectCookie.setSecure(COOKIE_PARIS_CONNECT_SECURE);  
-		    parisConnectCookie.setMaxAge(COOKIE_PARIS_CONNECT_MAX_AGE); 
-		    parisConnectCookie.setPath(COOKIE_PARIS_CONNECT_PATH); 
-
-		    response.addCookie(parisConnectCookie);
-		 }
 		 
       }
+    
+  
 
     /**
      * Fill user's data
@@ -293,6 +314,12 @@ public final class ParisConnectService
         boolean bVerified = "1".equals( strVerified );
         user.setVerified( bVerified );
     }
+    
+    
+    
+   
+    
+   
     
     
     

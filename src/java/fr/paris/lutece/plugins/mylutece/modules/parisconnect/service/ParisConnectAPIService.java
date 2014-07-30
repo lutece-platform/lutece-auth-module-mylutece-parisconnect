@@ -53,6 +53,7 @@ public final class ParisConnectAPIService
     public static final String PCUID = "pcuid";
     public static final String MESSAGE = "message";
     private static final String METHOD_DO_LOGIN = "do_login";
+    private static final String METHOD_DISCONNECT = "disconnect";
     private static final String METHOD_CHECK_CONNECTION_COOKIE = "check_connection_cookie";
     private static final String METHOD_GET_USER = "get_user";
     private static final String METHOD_SET_COOKIE = "set_cookie";
@@ -106,6 +107,23 @@ public final class ParisConnectAPIService
 
         return _accountAPI.callMethod( METHOD_CHECK_CONNECTION_COOKIE, mapParameters,false );
     }
+    
+    
+    /**
+     * Process user logout
+     * @param strPCUID the user PCUID
+     * @return The response provided by the API in JSON format
+     */
+    static String  doDisconnect( String strPCUID )
+        throws ParisConnectAPIException
+    {
+        Map<String, String> mapParameters = new HashMap<String, String>(  );
+        mapParameters.put( PARAMETER_CONNECTION_COOKIE, strPCUID );
+        return  _accountAPI.callMethod( METHOD_DISCONNECT, mapParameters,false );
+    }
+    
+    
+    
 
     /**
      * Set a connection cookie for the domain

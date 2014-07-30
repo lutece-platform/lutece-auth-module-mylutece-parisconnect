@@ -214,14 +214,16 @@ public class ParisConnectAPI
             _logger.error( "Error calling method '" + strMethod + " - " + ex.getMessage(  ), ex );
         }
         
-        boolean bJSONArray = strResponse.startsWith( "[{" );
-        
-        // Responses are not always in JSON format and Array should not be checked for errors
-        if( bJSON && !bJSONArray )
+        if(strResponse !=null)
         {
-            checkJSONforErrors( strResponse );
+        	boolean bJSONArray = strResponse.startsWith( "[{" );
+	        
+	        // Responses are not always in JSON format and Array should not be checked for errors
+	        if( bJSON && !bJSONArray )
+	        {
+	            checkJSONforErrors( strResponse );
+	        }
         }
-        
         return strResponse;
     }
     

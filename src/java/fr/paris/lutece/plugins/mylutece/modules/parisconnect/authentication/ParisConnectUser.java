@@ -46,6 +46,7 @@ public class ParisConnectUser extends LuteceUser
 {
     public String ROLE_VERIFIED = "verified";
     private String _strEmail;
+    private String _strPCUID;
     private boolean _bVerified;
 
     /**
@@ -105,4 +106,20 @@ public class ParisConnectUser extends LuteceUser
 
         _bVerified = bVerified;
     }
+
+    /**
+     * 
+     * @return the user pcuid
+     */
+	public String getPCUID() {
+		return _strPCUID;
+	}
+
+	/**
+	 * set the user pcuid
+	 * @param _strPcUid the user pcuid
+	 */
+	public void setPCUID(String _strPcUid) {
+		this._strPCUID = _strPcUid;
+	}
 }
