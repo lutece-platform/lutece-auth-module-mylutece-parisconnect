@@ -19,7 +19,6 @@
 	<!-- if the plugin must have a connection pool with parameter : 1 - yes, 0 - no -->   
    <db-pool-required>0</db-pool-required>
    
-   
    <filters>
 		<filter>
 				<filter-name>
@@ -32,5 +31,13 @@
 					/jsp/site/*
 				</url-pattern>
 		</filter>	
-		</filters>
+   </filters>
+      <!-- XPages parameters -->
+    <applications>
+        <application>
+            <application-id>myluteceParisConnect</application-id>
+            <application-class>fr.paris.lutece.plugins.mylutece.modules.parisconnect.web.MyLuteceParisConnectXPage</application-class>
+        </application>
+    </applications>
+   
 </plug-in>
