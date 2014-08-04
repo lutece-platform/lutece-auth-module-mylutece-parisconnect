@@ -142,7 +142,8 @@ public class MyLuteceParisConnectXPage extends MVCApplication
         		user=_parisConnectAuthentication.login(strUsername, strPassword, request);
 				if(user!=null)
 				{
-					jsonResponse=new JsonResponse(Boolean.TRUE);
+					SecurityService.getInstance(  ).registerUser( request, user );
+		        	jsonResponse=new JsonResponse(Boolean.TRUE);
 				}
 				
 			} catch (LoginException e) {
