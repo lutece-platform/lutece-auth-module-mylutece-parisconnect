@@ -39,5 +39,17 @@
             <application-class>fr.paris.lutece.plugins.mylutece.modules.parisconnect.web.MyLuteceParisConnectXPage</application-class>
         </application>
     </applications>
+    <!-- Page Includes -->
+    <page-include-services>
+        <page-include-service>
+            <page-include-service-id>parisConnectPopup</page-include-service-id>
+            <page-include-service-class>fr.paris.lutece.plugins.mylutece.modules.parisconnect.web.ParisConnectPopupInclude</page-include-service-class>
+        </page-include-service>	
+     </page-include-services>
+     <!-- javascript -->
+     <javascript-files>
+        <javascript-files-scope>portal</javascript-files-scope>
+        <javascript-file>mylutece/modules/parisconnect/parisconnect.js</javascript-file>
+    </javascript-files>
    
 </plug-in>

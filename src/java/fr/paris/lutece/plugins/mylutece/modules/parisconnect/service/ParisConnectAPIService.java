@@ -58,12 +58,28 @@ public final class ParisConnectAPIService
     private static final String METHOD_GET_USER = "get_user";
     private static final String METHOD_SET_COOKIE = "set_cookie";
     private static final String METHOD_GET_METADATA2 = "get_metadata2";
+    private static final String METHOD_SET_BIRTHDAY = "set_birthday";
+    private static final String METHOD_SET_PHONE = "set_phone";
+    private static final String METHOD_SET_PATRONYME="set_patronyme";
+    private static final String METHOD_SET_ADRESSE="set_adresse";
+    
+
+
+    public static final String PARAMETER_PCUID = "pcuid";
     private static final String PARAMETER_EMAIL = "email";
     private static final String PARAMETER_PWD = "pwd";
     private static final String PARAMETER_LABEL = "label";
     private static final String PARAMETER_TABLENAME = "tableName";
     private static final String PARAMTER_TABLEID = "tableId";
     private static final String PARAMETER_CONNECTION_COOKIE = "connection_cookie";
+    private static final String PARAMETER_BIRTHDAY = "birthday";
+    private static final String PARAMETER_PHONE="phone";
+    private static final String PARAMETER_FIRSTNAME ="firstname"; 
+    private static final String PARAMETER_NAME ="name";
+    private static final String PARAMETER_LOCATION= "location";
+    private static final String PARAMETER_ZIP_CODE="zip_code";
+    private static final String PARAMETER_CITY="city";
+    
     private static final String KEY_VALUE = "value";
     
     private static final ParisConnectAPI _accountAPI = SpringContextService.getBean( "mylutece-parisconnect.apiAccount" );
@@ -154,7 +170,7 @@ public final class ParisConnectAPIService
     static String getUser( String strPCUID ) throws ParisConnectAPIException
     {
         Map<String, String> mapParameters = new HashMap<String, String>(  );
-        mapParameters.put( PCUID, strPCUID );
+        mapParameters.put( PARAMETER_PCUID, strPCUID );
 
         return _usersAPI.callMethod( METHOD_GET_USER, mapParameters );
     }
@@ -185,5 +201,83 @@ public final class ParisConnectAPIService
             _logger.warn( "Metadata API call : metadata=" + strMetadataName + " - " + ex.getMessage());
             return "";
         }
+    }
+    
+    /**
+     * Set the user birthday 
+     * @param strPCUID The PCUID
+     * @param strBirthday the Birthday date
+     * @return  the Json response
+     */
+    static String setBirthday( String strPCUID,String strBirthday )
+    {
+        Map<String, String> mapParameters = new HashMap<String, String>(  );
+        mapParameters.put( PARAMETER_PCUID, strPCUID );
+        mapParameters.put( PARAMETER_BIRTHDAY, strBirthday );
+        String strResponse=null;
+        try
+        {
+        	strResponse=_usersAPI.callMethod( METHOD_SET_BIRTHDAY, mapParameters , false );
+        }
+        catch ( ParisConnectAPIException ex )
+        {
+            _logger.error( ex.getMessage(  ) );
+        }
+        return strResponse;
+    }
+    
+    
+    /**
+     * Set the first name and the last name of the user
+     * @param strPCUID The PCUID
+     * @param strFirstName the user first name
+     * @param strLastName the user last name
+     * @return  the Json response
+     */
+    static String setPatronyme( String strPCUID,String strFirstName,String strLastName )
+    {
+        Map<String, String> mapParameters = new HashMap<String, String>(  );
+        mapParameters.put( PARAMETER_PCUID, strPCUID );
+        mapParameters.put( PARAMETER_FIRSTNAME, strFirstName );
+        mapParameters.put( PARAMETER_NAME, strLastName );
+        String strResponse=null;
+        try
+        {
+        	strResponse=_usersAPI.callMethod( METHOD_SET_PATRONYME, mapParameters , false );
+        }
+        catch ( ParisConnectAPIException ex )
+        {
+            _logger.error( ex.getMessage(  ) );
+        }
+        return strResponse;
+    }
+    
+    
+    /**
+     * Set the User adress
+     * @param strPCUID The PCUID
+     * @param strLocation the location adress
+     * @param strZipCode the user Zip Code
+     * @param strCity the city of the user
+     * 
+     * @return  the Json response
+     */
+    static String setAdresse( String strPCUID,String strLocation,String strZipCode,String strCity )
+    {
+        Map<String, String> mapParameters = new HashMap<String, String>(  );
+        mapParameters.put( PARAMETER_PCUID, strPCUID );
+        mapParameters.put( PARAMETER_LOCATION, strLocation );
+        mapParameters.put( PARAMETER_ZIP_CODE, strZipCode );
+        mapParameters.put( PARAMETER_CITY, strCity );
+        String strResponse=null;
+        try
+        {
+        	strResponse=_usersAPI.callMethod( METHOD_SET_ADRESSE, mapParameters , false );
+        }
+        catch ( ParisConnectAPIException ex )
+        {
+            _logger.error( ex.getMessage(  ) );
+        }
+        return strResponse;
     }
 }

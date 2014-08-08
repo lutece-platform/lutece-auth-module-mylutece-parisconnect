@@ -33,6 +33,9 @@
  */
 package fr.paris.lutece.plugins.mylutece.modules.parisconnect.service;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -288,6 +291,47 @@ public final class ParisConnectService
 		 
       }
     
+    
+    /**
+     * Set the user birthday 
+     * @param strPCUID The PCUID
+     * @param strBirthday the Birthday date
+     * @return  the Json response
+     */
+    public  void  setBirthday( String strPCUID,String strBirthday )
+    {
+    	ParisConnectAPIService.setBirthday(strPCUID, strBirthday);
+        
+    }
+    
+    
+    /**
+     * Set the first name and the last name of the user
+     * @param strPCUID The PCUID
+     * @param strFirstName the user first name
+     * @param strLastName the user last name
+     * @return  the Json response
+     */
+    public  void  setPatronyme( String strPCUID,String strFirstName,String strLastName )
+    {
+    	ParisConnectAPIService.setPatronyme(strPCUID, strFirstName, strLastName);
+    }
+    
+    
+    /**
+     * Set the User adress
+     * @param strPCUID The PCUID
+     * @param strLocation the location adress
+     * @param strZipCode the user Zip Code
+     * @param strCity the city of the user
+     * 
+     * @return  the Json response
+     */
+    public  void    setAdresse( String strPCUID,String strLocation,String strZipCode,String strCity )
+    {
+    	ParisConnectAPIService.setAdresse(strPCUID, strLocation, strZipCode, strCity);
+    }
+    
   
 
     /**
@@ -314,6 +358,9 @@ public final class ParisConnectService
         boolean bVerified = "1".equals( strVerified );
         user.setVerified( bVerified );
     }
+    
+    
+    
     
     
     
