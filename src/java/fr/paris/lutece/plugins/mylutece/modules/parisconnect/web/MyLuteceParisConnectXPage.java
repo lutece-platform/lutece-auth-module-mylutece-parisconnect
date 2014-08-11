@@ -87,8 +87,8 @@ public class MyLuteceParisConnectXPage extends MVCApplication
      * @param request The request
      * @return A JSON string  containing  true in the field result if the user is authenticated
      */
-    @View( VIEW_IS_USER_AUTHENTICATED )
-    public XPage isUserAuthenticated( HttpServletRequest request )
+   
+    public String isUserAuthenticated( HttpServletRequest request )
     {
     	
     	AbstractJsonResponse jsonResponse=null;
@@ -115,7 +115,7 @@ public class MyLuteceParisConnectXPage extends MVCApplication
         }
         
        
-         return responseJSON( JsonUtil.buildJsonResponse(jsonResponse) ); 
+         return JsonUtil.buildJsonResponse(jsonResponse) ; 
     }
     
     
@@ -125,8 +125,8 @@ public class MyLuteceParisConnectXPage extends MVCApplication
      * @param request The request
      * @return A JSON string  containing  true in the user is authenticated
      */
-    @Action(  ACTION_DO_LOGIN_JSON)
-    public XPage doLogin( HttpServletRequest request )
+
+    public String doLogin( HttpServletRequest request )
     {
     	
     	String strUsername = request.getParameter( PARAMETER_USERNAME );
@@ -156,7 +156,7 @@ public class MyLuteceParisConnectXPage extends MVCApplication
         	
         }
        
-         return responseJSON( JsonUtil.buildJsonResponse(jsonResponse) ); 
+         return JsonUtil.buildJsonResponse(jsonResponse); 
     }
     
     

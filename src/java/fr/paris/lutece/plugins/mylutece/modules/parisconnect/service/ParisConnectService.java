@@ -51,6 +51,7 @@ import fr.paris.lutece.plugins.mylutece.modules.parisconnect.authentication.Pari
 import fr.paris.lutece.plugins.mylutece.modules.parisconnect.authentication.ParisConnectUser;
 import fr.paris.lutece.portal.service.security.LuteceUser;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
+import fr.paris.lutece.portal.service.util.AppLogService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 
 
@@ -69,6 +70,7 @@ public final class ParisConnectService
     private static final String PROPERTY_COOKIE_PARIS_CONNECT_MAX_SECURE ="parisconnect.cookieSecure";
     private static final String RESPONSE_STATUS = "status";
     private static final String RESPONSE_DATA = "data";
+    private static final String RESPONSE_OK = "\"OK\"";
     private static final String CHECK_CONNEXION_FALSE = "false";
     private static final String RESPONSE_STATUS_SUCCESS = "success";
     private static final String PCUSER_LASTNAME = "name";
@@ -298,10 +300,10 @@ public final class ParisConnectService
      * @param strBirthday the Birthday date
      * @return  the Json response
      */
-    public  void  setBirthday( String strPCUID,String strBirthday )
+    public  boolean  setBirthday( String strPCUID,String strBirthday )
     {
-    	ParisConnectAPIService.setBirthday(strPCUID, strBirthday);
-        
+    	String strResponse=ParisConnectAPIService.setBirthday(strPCUID, strBirthday);
+    	return 	strResponse !=null;
     }
     
     
@@ -310,11 +312,13 @@ public final class ParisConnectService
      * @param strPCUID The PCUID
      * @param strFirstName the user first name
      * @param strLastName the user last name
-     * @return  the Json response
+     * 
      */
-    public  void  setPatronyme( String strPCUID,String strFirstName,String strLastName )
+    public  boolean  setPatronyme( String strPCUID,String strFirstName,String strLastName )
     {
-    	ParisConnectAPIService.setPatronyme(strPCUID, strFirstName, strLastName);
+    	String strResponse=ParisConnectAPIService.setPatronyme(strPCUID, strFirstName, strLastName);
+    	return 	strResponse !=null;
+    	
     }
     
     
@@ -325,11 +329,71 @@ public final class ParisConnectService
      * @param strZipCode the user Zip Code
      * @param strCity the city of the user
      * 
-     * @return  the Json response
+     * 
      */
-    public  void    setAdresse( String strPCUID,String strLocation,String strZipCode,String strCity )
+    public  boolean    setAdresse( String strPCUID,String strLocation,String strZipCode,String strCity )
     {
-    	ParisConnectAPIService.setAdresse(strPCUID, strLocation, strZipCode, strCity);
+    	String strJsonResponse=ParisConnectAPIService.setAdresse(strPCUID, strLocation, strZipCode, strCity);
+    	return 	strJsonResponse !=null;
+    }
+    
+    
+    
+    /**
+     * Subscribe user to a alert
+     * @param strPCUID the user pcuid
+     * @param strIdAlertes the alert id
+     * @return the JSON response
+      */
+    public  boolean  subscribeUser( String strPCUID,String strIdAlertes)
+    {
+    	
+    	boolean subscribe=false;
+    	String strResponse=ParisConnectAPIService.subscribeUser(strPCUID, strIdAlertes);
+    	if(strResponse !=null)
+    	{
+    		if(RESPONSE_OK.equals(strResponse ))
+	          {
+    			subscribe=true;
+	    		 
+	        	}
+	    	 else
+	    	 {
+	    		 _logger.error( 
+	    	                "error during subscribeUser : "+ strResponse);
+	    	 }
+    		
+    	}
+    	
+    	return subscribe;
+    	
+    }
+    /**
+     * Unsubscribe user to a alert
+     * @param strPCUID the user pcuid
+     * @param strIdAlertes the alert id
+     * @return the JSON response
+      */
+    public  boolean  unSubscribeUser( String strPCUID,String strIdAlertes)
+    {
+    	
+    	boolean unscribe=false;
+    	String strResponse=ParisConnectAPIService.unSubscribeUser(strPCUID, strIdAlertes);
+    	if(strResponse !=null)
+    	{
+    		if(RESPONSE_OK.equals(strResponse ))
+	          {
+	    		 unscribe=true;
+	    		 
+	        	}
+	    	 else
+	    	 {
+	    		 _logger.error( 
+	    	                "error during unSubscribeUser : "+ strResponse);
+	    	 }
+    	}
+    	
+    	return unscribe;
     }
     
   

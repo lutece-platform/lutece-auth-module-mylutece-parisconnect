@@ -53,5 +53,18 @@
             </map>
         </property>
     </bean>
-  
+    <bean id="mylutece-parisconnect.apiPsup" class="fr.paris.lutece.plugins.mylutece.modules.parisconnect.service.ParisConnectAPI">
+       <property name="name">
+           <value>psup</value>
+       </property>
+       <property name="url">
+           <value>https://connect.paris.fr/api/api/psup/</value>
+       </property>
+       <property name="apiId">
+           <value>(your API Id)</value>
+       </property>
+       <property name="secretKey">
+           <value>(your API secret key)</value>
+       </property>
+   </bean>
 </beans>

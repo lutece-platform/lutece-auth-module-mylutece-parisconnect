@@ -59,13 +59,15 @@ public final class ParisConnectAPIService
     private static final String METHOD_SET_COOKIE = "set_cookie";
     private static final String METHOD_GET_METADATA2 = "get_metadata2";
     private static final String METHOD_SET_BIRTHDAY = "set_birthday";
-    private static final String METHOD_SET_PHONE = "set_phone";
     private static final String METHOD_SET_PATRONYME="set_patronyme";
     private static final String METHOD_SET_ADRESSE="set_adresse";
+    private static final String METHOD_SUBSCIBE_USER="subscribe_user";
+    private static final String METHOD_UNSUBSCIBE_USER="unsubscribe_user";
     
 
 
     public static final String PARAMETER_PCUID = "pcuid";
+    public static final String PARAMETER_ID_ALERTES = "idalertes";
     private static final String PARAMETER_EMAIL = "email";
     private static final String PARAMETER_PWD = "pwd";
     private static final String PARAMETER_LABEL = "label";
@@ -73,7 +75,6 @@ public final class ParisConnectAPIService
     private static final String PARAMTER_TABLEID = "tableId";
     private static final String PARAMETER_CONNECTION_COOKIE = "connection_cookie";
     private static final String PARAMETER_BIRTHDAY = "birthday";
-    private static final String PARAMETER_PHONE="phone";
     private static final String PARAMETER_FIRSTNAME ="firstname"; 
     private static final String PARAMETER_NAME ="name";
     private static final String PARAMETER_LOCATION= "location";
@@ -86,6 +87,9 @@ public final class ParisConnectAPIService
     private static final ParisConnectAPI _usersAPI = SpringContextService.getBean( "mylutece-parisconnect.apiUsers" );
     private static final ParisConnectAPI _metadataAPI = SpringContextService.getBean( 
             "mylutece-parisconnect.apiMetadata" );
+    private static final ParisConnectAPI _psupAPI = SpringContextService.getBean( 
+            "mylutece-parisconnect.apiPsup" );
+    
     private static Logger _logger = org.apache.log4j.Logger.getLogger( Constants.LOGGER_PARISCONNECT );
 
     /** Private constructor */
@@ -280,4 +284,57 @@ public final class ParisConnectAPIService
         }
         return strResponse;
     }
+    
+    
+    /**
+     * Subscribe user to a alert
+     * @param strPCUID the user pcuid
+     * @param strIdAlertes the alert id
+     * @return the JSON response
+      */
+    static String subscribeUser( String strPCUID,String strIdAlertes)
+    {
+    	
+    	 Map<String, String> mapParameters = new HashMap<String, String>(  );
+         mapParameters.put( PARAMETER_PCUID, strPCUID );
+         mapParameters.put( PARAMETER_ID_ALERTES, strIdAlertes );
+         String strResponse=null;
+         try
+         {
+         	strResponse=_psupAPI.callMethod( METHOD_SUBSCIBE_USER, mapParameters , false );
+         }
+         catch ( ParisConnectAPIException ex )
+         {
+             _logger.error( ex.getMessage(  ) );
+         }
+         return strResponse;
+    	
+    }
+    /**
+     * Unsubscribe user to a alert
+     * @param strPCUID the user pcuid
+     * @param strIdAlertes the alert id
+     * @return the JSON response
+      */
+    static String unSubscribeUser( String strPCUID,String strIdAlertes)
+    {
+    	
+    	 Map<String, String> mapParameters = new HashMap<String, String>(  );
+         mapParameters.put( PARAMETER_PCUID, strPCUID );
+         mapParameters.put( PARAMETER_ID_ALERTES, strIdAlertes );
+         String strResponse=null;
+         try
+         {
+         	strResponse=_psupAPI.callMethod( METHOD_UNSUBSCIBE_USER, mapParameters , false );
+         }
+         catch ( ParisConnectAPIException ex )
+         {
+             _logger.error( ex.getMessage(  ) );
+         }
+         return strResponse;
+    	
+    }
+
+    
+    
 }
