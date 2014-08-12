@@ -1,13 +1,3 @@
-// displayLoginPagePopup
-function displayLoginPagePopup() {
-
-    canonicalUrl = $('link[rel="canonical"]').attr('href');
-    returnUrl = jQuery.isEmptyObject(canonicalUrl) ? baseUrl : canonicalUrl;
-    return displayLoginPagePopupWithBackUrl(returnUrl);
-}
-
-//displayLoginPagePopup
-function displayLoginPagePopupWithBackUrl(returnUrl) {
-	window.open(popupConnectLoginPageUrl + returnUrl, '_blank', 'width=720,height=812,scrollbars=no,status=yes,resizable=no,screenx=0,screeny=0');
-    return false;
-}
+// displayLoginPagePopupfunction displayLoginPagePopup() {    canonicalUrl = $('link[rel="canonical"]').attr('href');    returnUrl = jQuery.isEmptyObject(canonicalUrl) ? baseUrl : canonicalUrl;    return displayLoginPagePopupWithBackUrl(returnUrl);}
+//displayLoginPagePopupfunction displayLoginPagePopupWithBackUrl(returnUrl) {	window.open( popupConnectLoginPageUrl + returnUrl, '_blank', 'width=720,height=812,scrollbars=no,status=yes,resizable=no,screenx=0,screeny=0');    return false;}//displayLostPasswordPagePopupfunction displayLostPasswordPagePopup() {	urlPrefix = "https://accounts.paris.fr/account/send_password?pop=1&returnUrl=";	canonicalUrl = $('link[rel="canonical"]').attr('href');	returnUrl = jQuery.isEmptyObject(canonicalUrl) ? baseUrl : canonicalUrl;	window.open( urlPrefix + returnUrl , '_blank', 'width=720,height=812,scrollbars=no,status=yes,resizable=no,screenx=0,screeny=0');    return false;}
+$(document).ready( function(){	$("#password").click(function(){		$("#lost_password").toggle();	});	$("#lost_password a").click( function(){		displayLostPasswordPagePopup();	});});
