@@ -70,7 +70,7 @@ public final class ParisConnectService
     private static final String PROPERTY_COOKIE_PARIS_CONNECT_MAX_SECURE ="parisconnect.cookieSecure";
     private static final String RESPONSE_STATUS = "status";
     private static final String RESPONSE_DATA = "data";
-    private static final String RESPONSE_OK = "\"OK\"";
+    private static final String RESPONSE_OK = "\"ok\"";
     private static final String CHECK_CONNEXION_FALSE = "false";
     private static final String RESPONSE_STATUS_SUCCESS = "success";
     private static final String PCUSER_LASTNAME = "name";
@@ -396,6 +396,29 @@ public final class ParisConnectService
     	return unscribe;
     }
     
+    /**
+     * get user pcuid by email
+     * @param strMail the mail 
+     * @return the pcuid of the user if a account exist 
+     */
+    public String getPcuidByEmail(String strMail)
+    {
+    	return ParisConnectAPIService.getPcuidByEmail(strMail);
+        
+    }
+    
+    
+    /**
+     * create a Shadow account
+     * @param strMail the mail
+     * @param strIdEmail the mail id 
+     * @return the user PCUID
+     */
+    public String setAccountShadow(String strMail,String strIdEmail)
+    {
+    	return ParisConnectAPIService.setAccountShadow(strMail, strIdEmail);	
+       	
+    }
   
 
     /**
@@ -426,14 +449,12 @@ public final class ParisConnectService
     
     
     
-    
-    
    
     
    
     
     
     
-    
-    
+
+
 }

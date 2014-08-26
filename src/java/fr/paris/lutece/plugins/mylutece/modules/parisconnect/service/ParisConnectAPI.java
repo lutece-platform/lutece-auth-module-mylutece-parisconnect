@@ -33,19 +33,20 @@
  */
 package fr.paris.lutece.plugins.mylutece.modules.parisconnect.service;
 
-import fr.paris.lutece.portal.service.util.AppPropertiesService;
-import fr.paris.lutece.util.httpaccess.HttpAccess;
-import fr.paris.lutece.util.httpaccess.HttpAccessException;
-import fr.paris.lutece.util.url.UrlItem;
+import java.util.Map;
+import java.util.Map.Entry;
 
+import net.sf.json.JSON;
+import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
 
 import org.apache.log4j.Logger;
 
-import java.util.Map;
-import java.util.Map.Entry;
-import net.sf.json.JSONException;
+import fr.paris.lutece.portal.service.util.AppPropertiesService;
+import fr.paris.lutece.util.httpaccess.HttpAccess;
+import fr.paris.lutece.util.httpaccess.HttpAccessException;
+import fr.paris.lutece.util.url.UrlItem;
 
 
 /**
@@ -243,8 +244,15 @@ public class ParisConnectAPI
             // ERR value is not always a JSON object
             try 
             {
-                JSONObject joError = (JSONObject) JSONSerializer.toJSON( strError );
-                strMessage = joError.getString( KEY_ERROR_MSG );
+            	JSON joError=  JSONSerializer.toJSON( strError );
+                if(!joError.isArray())
+                {
+                	strMessage = ((JSONObject )joError).getString( KEY_ERROR_MSG );
+                }
+                else
+                {
+                	strMessage=joError.toString();
+                }
             }
             catch( JSONException e )
             {

@@ -63,11 +63,12 @@ public final class ParisConnectAPIService
     private static final String METHOD_SET_ADRESSE="set_adresse";
     private static final String METHOD_SUBSCIBE_USER="subscribe_user";
     private static final String METHOD_UNSUBSCIBE_USER="unsubscribe_user";
+    private static final String METHOD_GET_PCUID_BY_EMAIL="get_pcuid_by_email";
+    private static final String METHOD_SET_ACCOUNT_SHADOW="set_account_shadow";
     
-
-
     public static final String PARAMETER_PCUID = "pcuid";
     public static final String PARAMETER_ID_ALERTES = "idalertes";
+    public static final String PARAMETER_ID_EMAIL = "id_mail";
     private static final String PARAMETER_EMAIL = "email";
     private static final String PARAMETER_PWD = "pwd";
     private static final String PARAMETER_LABEL = "label";
@@ -82,6 +83,7 @@ public final class ParisConnectAPIService
     private static final String PARAMETER_CITY="city";
     
     private static final String KEY_VALUE = "value";
+    private static final String KEY_PCUID = "pcuid";
     
     private static final ParisConnectAPI _accountAPI = SpringContextService.getBean( "mylutece-parisconnect.apiAccount" );
     private static final ParisConnectAPI _usersAPI = SpringContextService.getBean( "mylutece-parisconnect.apiUsers" );
@@ -334,6 +336,83 @@ public final class ParisConnectAPIService
          return strResponse;
     	
     }
+    
+    
+    /**
+     * get user PCUID by email
+     * @param strMail the mail 
+     * @return the PCUID of the user if a account exist 
+     */
+    static String getPcuidByEmail(String strMail)
+    {
+    	
+    	Map<String, String> mapParameters = new HashMap<String, String>(  );
+         mapParameters.put( PARAMETER_EMAIL, strMail );
+         String strPcuid=null;
+         String strResponse=null;
+         try
+         {
+         	strResponse=_usersAPI.callMethod( METHOD_GET_PCUID_BY_EMAIL, mapParameters , true );
+         	JSONObject jo = (JSONObject) JSONSerializer.toJSON( strResponse );
+         	strPcuid=jo.getString( KEY_PCUID );
+           }
+            catch (ParisConnectAPIException ex)
+            {
+                _logger.warn( "Account Shadow  API call : mail=" + strMail + " - " + ex.getMessage());
+              
+            }
+            catch (JSONException ex)
+            {
+                _logger.error( "Account Shadow  API call : mail=" + strMail + " - " + ex.getMessage());
+               
+            }
+        
+         return strPcuid;
+    	
+    }
+    
+    
+   
+    /**
+     * create a Shadow account
+     * @param strMail the mail
+     * @param strIdEmail the mail id 
+     * @return the user PCUID 
+     * */
+    static String setAccountShadow( String strMail,String strIdEmail)
+    {
+    	
+    	 Map<String, String> mapParameters = new HashMap<String, String>(  );
+         mapParameters.put( PARAMETER_EMAIL, strMail );
+         mapParameters.put( PARAMETER_ID_EMAIL, strIdEmail );
+         String strPcuid=null;
+         String strResponse=null;
+         try
+         {
+         	strResponse=_usersAPI.callMethod( METHOD_SET_ACCOUNT_SHADOW, mapParameters , true );
+         	JSONObject jo = (JSONObject) JSONSerializer.toJSON( strResponse );
+         	strPcuid=jo.getString( KEY_PCUID );
+           }
+            catch (ParisConnectAPIException ex)
+            {
+                _logger.warn( "Account Shadow  API call : mail=" + strMail + " - " + ex.getMessage());
+              
+            }
+            catch (JSONException ex)
+            {
+            	_logger.error( "Account Shadow  API call : mail=" + strMail + " - " + ex.getMessage());
+               
+            }
+        
+         return strPcuid;
+    	
+    }
+
+    
+    
+    
+    
+    
 
     
     
