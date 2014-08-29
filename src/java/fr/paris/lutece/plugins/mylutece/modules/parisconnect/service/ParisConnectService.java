@@ -33,9 +33,6 @@
  */
 package fr.paris.lutece.plugins.mylutece.modules.parisconnect.service;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -51,7 +48,6 @@ import fr.paris.lutece.plugins.mylutece.modules.parisconnect.authentication.Pari
 import fr.paris.lutece.plugins.mylutece.modules.parisconnect.authentication.ParisConnectUser;
 import fr.paris.lutece.portal.service.security.LuteceUser;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
-import fr.paris.lutece.portal.service.util.AppLogService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 
 
@@ -61,7 +57,10 @@ import fr.paris.lutece.portal.service.util.AppPropertiesService;
  */
 public final class ParisConnectService
 {
-    private static final String AUTHENTICATION_BEAN_NAME = "mylutece-parisconnect.authentication";
+	
+	public static final String ERROR_ALREADY_SUBSCRIBE = "ALREADY_SUBSCRIBE";
+	public static final String ERROR_DURING_SUBSCRIBE = "ERROR_DURING_SUBSCRIBE";
+	private static final String AUTHENTICATION_BEAN_NAME = "mylutece-parisconnect.authentication";
     private static  ParisConnectService _singleton;
     private static final String PROPERTY_COOKIE_PARIS_CONNECT_NAME = "parisconnect.cookieName";
     private static final String PROPERTY_COOKIE_PARIS_CONNECT_DOMAIN = "parisconnect.cookieDomain";
@@ -71,6 +70,7 @@ public final class ParisConnectService
     private static final String RESPONSE_STATUS = "status";
     private static final String RESPONSE_DATA = "data";
     private static final String RESPONSE_OK = "\"ok\"";
+    private static final String RESPONSE_ALREADY = "\"ALREADY\"";
     private static final String CHECK_CONNEXION_FALSE = "false";
     private static final String RESPONSE_STATUS_SUCCESS = "success";
     private static final String PCUSER_LASTNAME = "name";
@@ -345,27 +345,38 @@ public final class ParisConnectService
      * @param strIdAlertes the alert id
      * @return the JSON response
       */
-    public  boolean  subscribeUser( String strPCUID,String strIdAlertes)
+    public  String  subscribeUser( String strPCUID,String strIdAlertes)
     {
     	
-    	boolean subscribe=false;
+    	String strError=null;
     	String strResponse=ParisConnectAPIService.subscribeUser(strPCUID, strIdAlertes);
     	if(strResponse !=null)
     	{
-    		if(RESPONSE_OK.equals(strResponse ))
+    		if(!RESPONSE_OK.equals(strResponse ))
 	          {
-    			subscribe=true;
+    			
+    			
+    			if(RESPONSE_ALREADY.equals(strResponse))
+    			{
+    				
+    				strError=ERROR_ALREADY_SUBSCRIBE;
+    			}
+    			else
+    			{
+    				strError=ERROR_DURING_SUBSCRIBE;
+    				_logger.error( 
+   	    	                "error during subscribeUser : "+ strResponse);
+   	    	 	}
 	    		 
-	        	}
-	    	 else
-	    	 {
-	    		 _logger.error( 
-	    	                "error during subscribeUser : "+ strResponse);
-	    	 }
+	        }
+    	}
+    	else
+    	{
     		
+    		strError=ERROR_DURING_SUBSCRIBE;
     	}
     	
-    	return subscribe;
+    	return strError;
     	
     }
     /**
@@ -419,8 +430,35 @@ public final class ParisConnectService
     	return ParisConnectAPIService.setAccountShadow(strMail, strIdEmail);	
        	
     }
-  
+    
+    
+    /**
+     * get User uid by Pcuid
+     * @param strPcuid the user Pcuid
+     * @return the user Pcuid
+     */
+    public String getUidByPcuid(String strPcuid )
+    {
+    	
+    	String strUID=null; 
+    	 try
+         {
+             String strResponse = ParisConnectAPIService.checkConnectionCookie( strPcuid );
 
+             if ( !StringUtils.isEmpty( strResponse ) && ( !strResponse.equals( CHECK_CONNEXION_FALSE ) ) )
+             {
+            	 strUID = strResponse.replace("\"", "");
+               }
+         }
+         catch ( ParisConnectAPIException ex )
+         {
+             _logger.warn( ex.getMessage(  ) );
+         }
+    	 
+    	 return strUID;
+    }
+    
+  
     /**
      * Fill user's data
      * @param user The User
@@ -445,6 +483,10 @@ public final class ParisConnectService
         boolean bVerified = "1".equals( strVerified );
         user.setVerified( bVerified );
     }
+    
+    
+    
+    
     
     
     

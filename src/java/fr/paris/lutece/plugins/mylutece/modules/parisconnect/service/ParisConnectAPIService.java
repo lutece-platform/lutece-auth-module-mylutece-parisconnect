@@ -389,7 +389,8 @@ public final class ParisConnectAPIService
          String strResponse=null;
          try
          {
-         	strResponse=_usersAPI.callMethod( METHOD_SET_ACCOUNT_SHADOW, mapParameters , true );
+         	strResponse=_usersAPI.callMethod( METHOD_SET_ACCOUNT_SHADOW, mapParameters , false );
+         	strResponse=strResponse.trim();
          	JSONObject jo = (JSONObject) JSONSerializer.toJSON( strResponse );
          	strPcuid=jo.getString( KEY_PCUID );
            }
