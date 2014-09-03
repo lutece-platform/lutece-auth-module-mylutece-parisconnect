@@ -39,12 +39,10 @@ import javax.servlet.http.HttpServletRequest;
 import fr.paris.lutece.plugins.mylutece.modules.parisconnect.authentication.ParisConnectAuthentication;
 import fr.paris.lutece.portal.service.security.LuteceUser;
 import fr.paris.lutece.portal.service.security.SecurityService;
+import fr.paris.lutece.portal.service.security.SecurityTokenService;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
-import fr.paris.lutece.portal.util.mvc.commons.annotations.Action;
-import fr.paris.lutece.portal.util.mvc.commons.annotations.View;
 import fr.paris.lutece.portal.util.mvc.xpage.MVCApplication;
 import fr.paris.lutece.portal.util.mvc.xpage.annotations.Controller;
-import fr.paris.lutece.portal.web.xpages.XPage;
 import fr.paris.lutece.util.json.AbstractJsonResponse;
 import fr.paris.lutece.util.json.ErrorJsonResponse;
 import fr.paris.lutece.util.json.JsonResponse;
@@ -67,6 +65,7 @@ public class MyLuteceParisConnectXPage extends MVCApplication
     //Parameters
     private static final String PARAMETER_USERNAME = "username";
     private static final String PARAMETER_PASSWORD = "password";
+   
 
     // Views
     private static final String VIEW_IS_USER_AUTHENTICATED = "isUserAuthenticatedJson";
@@ -74,9 +73,12 @@ public class MyLuteceParisConnectXPage extends MVCApplication
 
     // Actions
     private static final String ACTION_DO_LOGIN_JSON = "doLoginJson";
+    private static final String TOKEN_ACTION_LOGIN = "dologin";
     
     // Json ERROR CODE
     private static final String JSON_ERROR_AUTHENTICATION_NOT_ENABLE = "AUTHENTICATION_NOT_ENABLE";
+    private static final String JSON_ERROR_LOGIN_ERROR = "LOGIN_ERROR";
+
     
   	 private ParisConnectAuthentication  _parisConnectAuthentication = (ParisConnectAuthentication) SpringContextService.getBean( 
              "mylutece-parisconnect.authentication" );
@@ -110,7 +112,7 @@ public class MyLuteceParisConnectXPage extends MVCApplication
            }
         else
         {
-        	jsonResponse=new ErrorJsonResponse(JSON_ERROR_AUTHENTICATION_NOT_ENABLE);
+        	jsonResponse=new ParisConnectErrorJsonResponse(JSON_ERROR_AUTHENTICATION_NOT_ENABLE);
         	
         }
         
@@ -138,21 +140,24 @@ public class MyLuteceParisConnectXPage extends MVCApplication
         if ( SecurityService.isAuthenticationEnable(  ) )
         {
         	
-        	try {
-        		user=_parisConnectAuthentication.login(strUsername, strPassword, request);
-				if(user!=null)
-				{
-					SecurityService.getInstance(  ).registerUser( request, user );
-		        	jsonResponse=new JsonResponse(Boolean.TRUE);
-				}
+        	
+        	
+	        	try {
+	        		user=_parisConnectAuthentication.login(strUsername, strPassword, request);
+					if(user!=null)
+					{
+						SecurityService.getInstance(  ).registerUser( request, user );
+			        	jsonResponse=new JsonResponse(Boolean.TRUE);
+					}
+					
+				} catch (LoginException e) {
+					jsonResponse=new ParisConnectErrorJsonResponse(JSON_ERROR_LOGIN_ERROR,SecurityTokenService.getInstance().getToken(request, TOKEN_ACTION_LOGIN));
 				
-			} catch (LoginException e) {
-				jsonResponse=new JsonResponse(Boolean.FALSE);
-			}
+            }
          }
         else
         {
-        	jsonResponse=new ErrorJsonResponse(JSON_ERROR_AUTHENTICATION_NOT_ENABLE);
+        	jsonResponse=new ParisConnectErrorJsonResponse(JSON_ERROR_AUTHENTICATION_NOT_ENABLE);
         	
         }
        

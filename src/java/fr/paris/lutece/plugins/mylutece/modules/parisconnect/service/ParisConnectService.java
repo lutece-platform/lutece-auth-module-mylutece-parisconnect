@@ -149,7 +149,7 @@ public final class ParisConnectService
     public ParisConnectUser doLogin( HttpServletRequest request, String strUserName, String strUserPassword,
         ParisConnectAuthentication parisConnectAuthentication )
     {
-        String strResponse;
+    	String strResponse;
         ParisConnectUser user = null;
 
         try
