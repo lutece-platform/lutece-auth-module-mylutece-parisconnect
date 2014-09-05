@@ -33,10 +33,6 @@
  */
 package fr.paris.lutece.plugins.mylutece.modules.parisconnect.authentication;
 
-import javax.security.auth.login.FailedLoginException;
-import javax.security.auth.login.LoginException;
-import javax.servlet.http.HttpServletRequest;
-
 import fr.paris.lutece.plugins.mylutece.authentication.PortalAuthentication;
 import fr.paris.lutece.plugins.mylutece.modules.parisconnect.service.ParisConnectPlugin;
 import fr.paris.lutece.plugins.mylutece.modules.parisconnect.service.ParisConnectService;
@@ -46,20 +42,25 @@ import fr.paris.lutece.portal.service.security.SecurityTokenService;
 import fr.paris.lutece.portal.service.util.AppLogService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 
+import javax.security.auth.login.FailedLoginException;
+import javax.security.auth.login.LoginException;
+
+import javax.servlet.http.HttpServletRequest;
+
 
 /**
  * ParisConnect Authentication
  */
 public class ParisConnectAuthentication extends PortalAuthentication
 {
-   
-	private static final String TOKEN_ACTION_LOGIN = "dologin";
-	private static final String AUTH_SERVICE_NAME = "Lutece Paris Connect Authentication Service";
+    private static final String TOKEN_ACTION_LOGIN = "dologin";
+    private static final String AUTH_SERVICE_NAME = "Lutece Paris Connect Authentication Service";
     private static final String URL_ICON = "images/local/skin/plugins/mylutece/modules/parisconnect/parisconnect.png";
     private static final String PROPERTY_CREATE_ACCOUNT_URL = "mylutece-parisconnect.url.createAccount.page";
     private static final String PROPERTY_LOST_PASSWORD_URL = "mylutece-parisconnect.url.lostPassword.page";
     private static final String PROPERTY_VIEW_ACCOUNT_URL = "mylutece-parisconnect.url.viewAccount.page";
-    private static final String PROPERTY_MESSAGE_FAILED_LOGIN= "module.mylutece.parisconnect.message.error.failedLogin";
+    private static final String PROPERTY_MESSAGE_FAILED_LOGIN = "module.mylutece.parisconnect.message.error.failedLogin";
+
     /**
      * Constructor
      */
@@ -101,23 +102,22 @@ public class ParisConnectAuthentication extends PortalAuthentication
     public LuteceUser login( String strUserName, String strUserPassword, HttpServletRequest request )
         throws LoginException
     {
-        
-    	 //test token 
-        if(!SecurityTokenService.getInstance().validate(request, TOKEN_ACTION_LOGIN))
+        //test token 
+        if ( !SecurityTokenService.getInstance(  ).validate( request, TOKEN_ACTION_LOGIN ) )
         {
-        	AppLogService.error("ParisConnectAuthentication: Token not validated");
-        	throw new FailedLoginException( I18nService.getLocalizedString( 
-        			PROPERTY_MESSAGE_FAILED_LOGIN, request.getLocale() ) );
-        	
+            AppLogService.error( "ParisConnectAuthentication: Token not validated" );
+            throw new FailedLoginException( I18nService.getLocalizedString( PROPERTY_MESSAGE_FAILED_LOGIN,
+                    request.getLocale(  ) ) );
         }
-    	
-    	LuteceUser user=ParisConnectService.getInstance(  ).doLogin( request, strUserName, strUserPassword, this );
-        
-        if(user==null)
+
+        LuteceUser user = ParisConnectService.getInstance(  ).doLogin( request, strUserName, strUserPassword, this );
+
+        if ( user == null )
         {
-        	throw new FailedLoginException( I18nService.getLocalizedString( 
-        			PROPERTY_MESSAGE_FAILED_LOGIN, request.getLocale() ) );
+            throw new FailedLoginException( I18nService.getLocalizedString( PROPERTY_MESSAGE_FAILED_LOGIN,
+                    request.getLocale(  ) ) );
         }
+
         return user;
     }
 
@@ -128,7 +128,7 @@ public class ParisConnectAuthentication extends PortalAuthentication
     @Override
     public void logout( LuteceUser user )
     {
-    	ParisConnectService.getInstance(  ).doLogout((ParisConnectUser)user);
+        ParisConnectService.getInstance(  ).doLogout( (ParisConnectUser) user );
     }
 
     /**

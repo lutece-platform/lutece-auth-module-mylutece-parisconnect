@@ -33,6 +33,13 @@
  */
 package fr.paris.lutece.plugins.mylutece.modules.parisconnect.web;
 
+import fr.paris.lutece.plugins.mylutece.modules.parisconnect.authentication.ParisConnectAuthentication;
+import fr.paris.lutece.plugins.mylutece.modules.parisconnect.authentication.ParisConnectUser;
+import fr.paris.lutece.plugins.mylutece.modules.parisconnect.service.ParisConnectService;
+import fr.paris.lutece.portal.service.security.LuteceUser;
+import fr.paris.lutece.portal.service.security.SecurityService;
+import fr.paris.lutece.portal.service.spring.SpringContextService;
+
 import java.io.IOException;
 
 import javax.servlet.Filter;
@@ -43,13 +50,6 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import fr.paris.lutece.plugins.mylutece.modules.parisconnect.authentication.ParisConnectAuthentication;
-import fr.paris.lutece.plugins.mylutece.modules.parisconnect.authentication.ParisConnectUser;
-import fr.paris.lutece.plugins.mylutece.modules.parisconnect.service.ParisConnectService;
-import fr.paris.lutece.portal.service.security.LuteceUser;
-import fr.paris.lutece.portal.service.security.SecurityService;
-import fr.paris.lutece.portal.service.spring.SpringContextService;
 
 
 /**
@@ -81,26 +81,28 @@ public class ParisConnectLuteceFilter implements Filter
 
         if ( user == null )
         {
-            
-        	 ParisConnectAuthentication  parisConnectAuthentication = (ParisConnectAuthentication) SpringContextService.getBean( 
-                     "mylutece-parisconnect.authentication" );
-        	 user = parisConnectAuthentication.getHttpAuthenticatedUser(request);
-        	 if(user != null)
-        	 {
-        		 SecurityService.getInstance(  ).registerUser( request, user );
-        	 }
+            ParisConnectAuthentication parisConnectAuthentication = (ParisConnectAuthentication) SpringContextService.getBean( 
+                    "mylutece-parisconnect.authentication" );
+            user = parisConnectAuthentication.getHttpAuthenticatedUser( request );
+
+            if ( user != null )
+            {
+                SecurityService.getInstance(  ).registerUser( request, user );
+            }
         }
         else
-       {
-        	String strPcuid=ParisConnectService.getInstance().getConnectionCookie(request);
-        	//if the request does not contains the Paris connect connection cookie 
-        	if( strPcuid == null || strPcuid!= ((ParisConnectUser)user).getPCUID() )
-        	{
-        		ParisConnectService.getInstance().setConnectionCookie(((ParisConnectUser)user).getPCUID(), (HttpServletResponse)response);
-        	}
-       	
-       }
-        	
+        {
+            String strPcuid = ParisConnectService.getInstance(  ).getConnectionCookie( request );
+
+            //if the request does not contains the Paris connect connection cookie 
+            if ( ( strPcuid == null ) || ( strPcuid != ( (ParisConnectUser) user ).getPCUID(  ) ) )
+            {
+                ParisConnectService.getInstance(  )
+                                   .setConnectionCookie( ( (ParisConnectUser) user ).getPCUID(  ),
+                    (HttpServletResponse) response );
+            }
+        }
+
         chain.doFilter( servletRequest, response );
     }
 

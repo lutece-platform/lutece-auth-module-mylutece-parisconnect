@@ -33,17 +33,17 @@
  */
 package fr.paris.lutece.plugins.mylutece.modules.parisconnect.web;
 
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-
 import fr.paris.lutece.portal.service.content.PageData;
 import fr.paris.lutece.portal.service.includes.PageInclude;
 import fr.paris.lutece.portal.service.template.AppTemplateService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.util.html.HtmlTemplate;
+
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
 
 
 /**
@@ -56,33 +56,32 @@ public class ParisConnectPopupInclude implements PageInclude
 
     // Properties
     private static final String PROPERTY_PARIS_CONNECT_POPUP_LOGIN_URL = "mylutece-parisconnect.url.popupLoginUrl";
-    
+
     // Mark
-     private static final String MARK_PARIS_CONNECT_POPUP_LOGIN_URL = "paris_connect_login_url";
-     private static final String  MARK_PARIS_CONNECT_POPUP_INCLUDE ="paris_connect_popup_include";
-         
-    
+    private static final String MARK_PARIS_CONNECT_POPUP_LOGIN_URL = "paris_connect_login_url";
+    private static final String MARK_PARIS_CONNECT_POPUP_INCLUDE = "paris_connect_popup_include";
 
     /**
      * {@inheritDoc}
      */
     @Override
     public void fillTemplate( Map<String, Object> rootModel, PageData data, int nMode, HttpServletRequest request )
-    {                        
-        rootModel.put( MARK_PARIS_CONNECT_POPUP_INCLUDE, getTemplate( request) );
+    {
+        rootModel.put( MARK_PARIS_CONNECT_POPUP_INCLUDE, getTemplate( request ) );
     }
-    
+
     /**
-     * 
+     *
      * @param request
      * @return template
      */
-    private String getTemplate ( HttpServletRequest request )
+    private String getTemplate( HttpServletRequest request )
     {
         Map<String, Object> model = new HashMap<String, Object>(  );
         Locale locale = ( request == null ) ? null : request.getLocale(  );
-        String strParisConnectPopupLoginUrl=AppPropertiesService.getProperty(PROPERTY_PARIS_CONNECT_POPUP_LOGIN_URL);
-        model.put(MARK_PARIS_CONNECT_POPUP_LOGIN_URL, strParisConnectPopupLoginUrl);
+        String strParisConnectPopupLoginUrl = AppPropertiesService.getProperty( PROPERTY_PARIS_CONNECT_POPUP_LOGIN_URL );
+        model.put( MARK_PARIS_CONNECT_POPUP_LOGIN_URL, strParisConnectPopupLoginUrl );
+
         HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_INCLUDE, locale, model );
 
         return template.getHtml(  );

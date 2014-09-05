@@ -33,22 +33,23 @@
  */
 package fr.paris.lutece.plugins.mylutece.modules.parisconnect.service;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import net.sf.json.JSONObject;
-import net.sf.json.JSONSerializer;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-
 import fr.paris.lutece.plugins.mylutece.authentication.MultiLuteceAuthentication;
 import fr.paris.lutece.plugins.mylutece.modules.parisconnect.authentication.ParisConnectAuthentication;
 import fr.paris.lutece.plugins.mylutece.modules.parisconnect.authentication.ParisConnectUser;
 import fr.paris.lutece.portal.service.security.LuteceUser;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
+
+import net.sf.json.JSONObject;
+import net.sf.json.JSONSerializer;
+
+import org.apache.commons.lang.StringUtils;
+
+import org.apache.log4j.Logger;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 
 /**
@@ -57,16 +58,15 @@ import fr.paris.lutece.portal.service.util.AppPropertiesService;
  */
 public final class ParisConnectService
 {
-	
-	public static final String ERROR_ALREADY_SUBSCRIBE = "ALREADY_SUBSCRIBE";
-	public static final String ERROR_DURING_SUBSCRIBE = "ERROR_DURING_SUBSCRIBE";
-	private static final String AUTHENTICATION_BEAN_NAME = "mylutece-parisconnect.authentication";
-    private static  ParisConnectService _singleton;
+    public static final String ERROR_ALREADY_SUBSCRIBE = "ALREADY_SUBSCRIBE";
+    public static final String ERROR_DURING_SUBSCRIBE = "ERROR_DURING_SUBSCRIBE";
+    private static final String AUTHENTICATION_BEAN_NAME = "mylutece-parisconnect.authentication";
+    private static ParisConnectService _singleton;
     private static final String PROPERTY_COOKIE_PARIS_CONNECT_NAME = "parisconnect.cookieName";
     private static final String PROPERTY_COOKIE_PARIS_CONNECT_DOMAIN = "parisconnect.cookieDomain";
-    private static final String PROPERTY_COOKIE_PARIS_CONNECT_PATH= "parisconnect.cookiePath";
-    private static final String PROPERTY_COOKIE_PARIS_CONNECT_MAX_AGE= "parisconnect.cookieMaxAge";
-    private static final String PROPERTY_COOKIE_PARIS_CONNECT_MAX_SECURE ="parisconnect.cookieSecure";
+    private static final String PROPERTY_COOKIE_PARIS_CONNECT_PATH = "parisconnect.cookiePath";
+    private static final String PROPERTY_COOKIE_PARIS_CONNECT_MAX_AGE = "parisconnect.cookieMaxAge";
+    private static final String PROPERTY_COOKIE_PARIS_CONNECT_MAX_SECURE = "parisconnect.cookieSecure";
     private static final String RESPONSE_STATUS = "status";
     private static final String RESPONSE_DATA = "data";
     private static final String RESPONSE_OK = "\"ok\"";
@@ -83,12 +83,11 @@ public final class ParisConnectService
     private static final String PCUSER_VERIFIED = "is_verified";
     private static final String PCUSER_BIRTHDATE = "birthday";
     private static final String PCUSER_ADDRESS = "location";
-    private static String COOKIE_PARIS_CONNECT_NAME ;
-    private static String COOKIE_PARIS_CONNECT_DOMAIN ;
-    private static String COOKIE_PARIS_CONNECT_PATH ;
+    private static String COOKIE_PARIS_CONNECT_NAME;
+    private static String COOKIE_PARIS_CONNECT_DOMAIN;
+    private static String COOKIE_PARIS_CONNECT_PATH;
     private static int COOKIE_PARIS_CONNECT_MAX_AGE;
     private static boolean COOKIE_PARIS_CONNECT_SECURE;
-   
     private static Logger _logger = Logger.getLogger( Constants.LOGGER_PARISCONNECT );
 
     /**
@@ -106,16 +105,18 @@ public final class ParisConnectService
      */
     public static ParisConnectService getInstance(  )
     {
-    	if(_singleton == null)
-    	{
-    	   _singleton= new ParisConnectService(  );
-    	   COOKIE_PARIS_CONNECT_NAME = AppPropertiesService.getProperty( PROPERTY_COOKIE_PARIS_CONNECT_NAME );
-    	   COOKIE_PARIS_CONNECT_DOMAIN = AppPropertiesService.getProperty( PROPERTY_COOKIE_PARIS_CONNECT_DOMAIN );
-    	   COOKIE_PARIS_CONNECT_PATH = AppPropertiesService.getProperty( PROPERTY_COOKIE_PARIS_CONNECT_PATH );
-    	   COOKIE_PARIS_CONNECT_MAX_AGE = AppPropertiesService.getPropertyInt( PROPERTY_COOKIE_PARIS_CONNECT_MAX_AGE,60 * 30 );
-    	   COOKIE_PARIS_CONNECT_SECURE = AppPropertiesService.getPropertyBoolean( PROPERTY_COOKIE_PARIS_CONNECT_MAX_SECURE, true );
-    	}
-    	
+        if ( _singleton == null )
+        {
+            _singleton = new ParisConnectService(  );
+            COOKIE_PARIS_CONNECT_NAME = AppPropertiesService.getProperty( PROPERTY_COOKIE_PARIS_CONNECT_NAME );
+            COOKIE_PARIS_CONNECT_DOMAIN = AppPropertiesService.getProperty( PROPERTY_COOKIE_PARIS_CONNECT_DOMAIN );
+            COOKIE_PARIS_CONNECT_PATH = AppPropertiesService.getProperty( PROPERTY_COOKIE_PARIS_CONNECT_PATH );
+            COOKIE_PARIS_CONNECT_MAX_AGE = AppPropertiesService.getPropertyInt( PROPERTY_COOKIE_PARIS_CONNECT_MAX_AGE,
+                    60 * 30 );
+            COOKIE_PARIS_CONNECT_SECURE = AppPropertiesService.getPropertyBoolean( PROPERTY_COOKIE_PARIS_CONNECT_MAX_SECURE,
+                    true );
+        }
+
         return _singleton;
     }
 
@@ -149,7 +150,7 @@ public final class ParisConnectService
     public ParisConnectUser doLogin( HttpServletRequest request, String strUserName, String strUserPassword,
         ParisConnectAuthentication parisConnectAuthentication )
     {
-    	String strResponse;
+        String strResponse;
         ParisConnectUser user = null;
 
         try
@@ -171,14 +172,13 @@ public final class ParisConnectService
                         String strUID = joObjectUser.getString( ParisConnectAPIService.USER_UID );
                         _logger.debug( "doLogin : Login OK - UID=" + strUID );
                         user = new ParisConnectUser( strUID, parisConnectAuthentication );
-                    
+
                         String strPCUID = joObjectUser.getString( ParisConnectAPIService.PCUID );
-                        
+
                         _logger.debug( "doLogin : get PCUID=" + strPCUID );
                         //save paris connect cookie value
-                        user.setPCUID(strPCUID);
+                        user.setPCUID( strPCUID );
                         fillUserData( user, ParisConnectAPIService.getUser( strPCUID ) );
-                       
                     }
                 }
             }
@@ -190,25 +190,21 @@ public final class ParisConnectService
 
         return user;
     }
-    
-    
+
     /**
      * Logout to paris connect
      * @param user the ParisConnectUser
      */
-    public void doLogout(ParisConnectUser user)
+    public void doLogout( ParisConnectUser user )
     {
-    	
-    	try
+        try
         {
-          
-    		ParisConnectAPIService.doDisconnect(user.getPCUID());
-         }
+            ParisConnectAPIService.doDisconnect( user.getPCUID(  ) );
+        }
         catch ( ParisConnectAPIException ex )
         {
             _logger.warn( ex.getMessage(  ) );
         }
-    	
     }
 
     /**
@@ -232,10 +228,10 @@ public final class ParisConnectService
 
                 if ( !StringUtils.isEmpty( strResponse ) && ( !strResponse.equals( CHECK_CONNEXION_FALSE ) ) )
                 {
-                    String strUID = strResponse.replace("\"", "");
+                    String strUID = strResponse.replace( "\"", "" );
                     user = new ParisConnectUser( strUID, parisConnectAuthentication );
                     //save paris connect cookie value
-                    user.setPCUID(strPCUID);
+                    user.setPCUID( strPCUID );
                     fillUserData( user, ParisConnectAPIService.getUser( strPCUID ) );
                 }
             }
@@ -253,7 +249,7 @@ public final class ParisConnectService
      * @param request The HTTP request
      * @return The cookie's value
      */
-    public  String getConnectionCookie( HttpServletRequest request )
+    public String getConnectionCookie( HttpServletRequest request )
     {
         Cookie[] cookies = request.getCookies(  );
         String strParisConnectCookie = null;
@@ -273,192 +269,174 @@ public final class ParisConnectService
 
         return strParisConnectCookie;
     }
-    
+
     /**
      * set a paris connect cokkie in the HttpServletResponse
      * @param strPCUID the user PCUID
      * @param response The HTTP response
      */
-    public  void setConnectionCookie(String strPCUID,HttpServletResponse response)
+    public void setConnectionCookie( String strPCUID, HttpServletResponse response )
     {
-    	// set a connexion cookie to let the user access other PC Services without sign in
-		 Cookie parisConnectCookie = new Cookie(COOKIE_PARIS_CONNECT_NAME, strPCUID);
-		 parisConnectCookie.setDomain(COOKIE_PARIS_CONNECT_DOMAIN);
-		 parisConnectCookie.setSecure(COOKIE_PARIS_CONNECT_SECURE);  
-		 parisConnectCookie.setMaxAge(COOKIE_PARIS_CONNECT_MAX_AGE); 
-		 parisConnectCookie.setPath(COOKIE_PARIS_CONNECT_PATH); 
-		 
-		 response.addCookie(parisConnectCookie);
-		 
-		 
-      }
-    
-    
+        // set a connexion cookie to let the user access other PC Services without sign in
+        Cookie parisConnectCookie = new Cookie( COOKIE_PARIS_CONNECT_NAME, strPCUID );
+        parisConnectCookie.setDomain( COOKIE_PARIS_CONNECT_DOMAIN );
+        parisConnectCookie.setSecure( COOKIE_PARIS_CONNECT_SECURE );
+        parisConnectCookie.setMaxAge( COOKIE_PARIS_CONNECT_MAX_AGE );
+        parisConnectCookie.setPath( COOKIE_PARIS_CONNECT_PATH );
+
+        response.addCookie( parisConnectCookie );
+    }
+
     /**
-     * Set the user birthday 
+     * Set the user birthday
      * @param strPCUID The PCUID
      * @param strBirthday the Birthday date
      * @return  the Json response
      */
-    public  boolean  setBirthday( String strPCUID,String strBirthday )
+    public boolean setBirthday( String strPCUID, String strBirthday )
     {
-    	String strResponse=ParisConnectAPIService.setBirthday(strPCUID, strBirthday);
-    	return 	strResponse !=null;
+        String strResponse = ParisConnectAPIService.setBirthday( strPCUID, strBirthday );
+
+        return strResponse != null;
     }
-    
-    
+
     /**
      * Set the first name and the last name of the user
      * @param strPCUID The PCUID
      * @param strFirstName the user first name
      * @param strLastName the user last name
-     * 
+     *
      */
-    public  boolean  setPatronyme( String strPCUID,String strFirstName,String strLastName )
+    public boolean setPatronyme( String strPCUID, String strFirstName, String strLastName )
     {
-    	String strResponse=ParisConnectAPIService.setPatronyme(strPCUID, strFirstName, strLastName);
-    	return 	strResponse !=null;
-    	
+        String strResponse = ParisConnectAPIService.setPatronyme( strPCUID, strFirstName, strLastName );
+
+        return strResponse != null;
     }
-    
-    
+
     /**
      * Set the User adress
      * @param strPCUID The PCUID
      * @param strLocation the location adress
      * @param strZipCode the user Zip Code
      * @param strCity the city of the user
-     * 
-     * 
+     *
+     *
      */
-    public  boolean    setAdresse( String strPCUID,String strLocation,String strZipCode,String strCity )
+    public boolean setAdresse( String strPCUID, String strLocation, String strZipCode, String strCity )
     {
-    	String strJsonResponse=ParisConnectAPIService.setAdresse(strPCUID, strLocation, strZipCode, strCity);
-    	return 	strJsonResponse !=null;
+        String strJsonResponse = ParisConnectAPIService.setAdresse( strPCUID, strLocation, strZipCode, strCity );
+
+        return strJsonResponse != null;
     }
-    
-    
-    
+
     /**
      * Subscribe user to a alert
      * @param strPCUID the user pcuid
      * @param strIdAlertes the alert id
      * @return the JSON response
       */
-    public  String  subscribeUser( String strPCUID,String strIdAlertes)
+    public String subscribeUser( String strPCUID, String strIdAlertes )
     {
-    	
-    	String strError=null;
-    	String strResponse=ParisConnectAPIService.subscribeUser(strPCUID, strIdAlertes);
-    	if(strResponse !=null)
-    	{
-    		if(!RESPONSE_OK.equals(strResponse ))
-	          {
-    			
-    			
-    			if(RESPONSE_ALREADY.equals(strResponse))
-    			{
-    				
-    				strError=ERROR_ALREADY_SUBSCRIBE;
-    			}
-    			else
-    			{
-    				strError=ERROR_DURING_SUBSCRIBE;
-    				_logger.error( 
-   	    	                "error during subscribeUser : "+ strResponse);
-   	    	 	}
-	    		 
-	        }
-    	}
-    	else
-    	{
-    		
-    		strError=ERROR_DURING_SUBSCRIBE;
-    	}
-    	
-    	return strError;
-    	
+        String strError = null;
+        String strResponse = ParisConnectAPIService.subscribeUser( strPCUID, strIdAlertes );
+
+        if ( strResponse != null )
+        {
+            if ( !RESPONSE_OK.equals( strResponse ) )
+            {
+                if ( RESPONSE_ALREADY.equals( strResponse ) )
+                {
+                    strError = ERROR_ALREADY_SUBSCRIBE;
+                }
+                else
+                {
+                    strError = ERROR_DURING_SUBSCRIBE;
+                    _logger.error( "error during subscribeUser : " + strResponse );
+                }
+            }
+        }
+        else
+        {
+            strError = ERROR_DURING_SUBSCRIBE;
+        }
+
+        return strError;
     }
+
     /**
      * Unsubscribe user to a alert
      * @param strPCUID the user pcuid
      * @param strIdAlertes the alert id
      * @return the JSON response
       */
-    public  boolean  unSubscribeUser( String strPCUID,String strIdAlertes)
+    public boolean unSubscribeUser( String strPCUID, String strIdAlertes )
     {
-    	
-    	boolean unscribe=false;
-    	String strResponse=ParisConnectAPIService.unSubscribeUser(strPCUID, strIdAlertes);
-    	if(strResponse !=null)
-    	{
-    		if(RESPONSE_OK.equals(strResponse ))
-	          {
-	    		 unscribe=true;
-	    		 
-	        	}
-	    	 else
-	    	 {
-	    		 _logger.error( 
-	    	                "error during unSubscribeUser : "+ strResponse);
-	    	 }
-    	}
-    	
-    	return unscribe;
+        boolean unscribe = false;
+        String strResponse = ParisConnectAPIService.unSubscribeUser( strPCUID, strIdAlertes );
+
+        if ( strResponse != null )
+        {
+            if ( RESPONSE_OK.equals( strResponse ) )
+            {
+                unscribe = true;
+            }
+            else
+            {
+                _logger.error( "error during unSubscribeUser : " + strResponse );
+            }
+        }
+
+        return unscribe;
     }
-    
+
     /**
      * get user pcuid by email
-     * @param strMail the mail 
-     * @return the pcuid of the user if a account exist 
+     * @param strMail the mail
+     * @return the pcuid of the user if a account exist
      */
-    public String getPcuidByEmail(String strMail)
+    public String getPcuidByEmail( String strMail )
     {
-    	return ParisConnectAPIService.getPcuidByEmail(strMail);
-        
+        return ParisConnectAPIService.getPcuidByEmail( strMail );
     }
-    
-    
+
     /**
      * create a Shadow account
      * @param strMail the mail
-     * @param strIdEmail the mail id 
+     * @param strIdEmail the mail id
      * @return the user PCUID
      */
-    public String setAccountShadow(String strMail,String strIdEmail)
+    public String setAccountShadow( String strMail, String strIdEmail )
     {
-    	return ParisConnectAPIService.setAccountShadow(strMail, strIdEmail);	
-       	
+        return ParisConnectAPIService.setAccountShadow( strMail, strIdEmail );
     }
-    
-    
+
     /**
      * get User uid by Pcuid
      * @param strPcuid the user Pcuid
      * @return the user Pcuid
      */
-    public String getUidByPcuid(String strPcuid )
+    public String getUidByPcuid( String strPcuid )
     {
-    	
-    	String strUID=null; 
-    	 try
-         {
-             String strResponse = ParisConnectAPIService.checkConnectionCookie( strPcuid );
+        String strUID = null;
 
-             if ( !StringUtils.isEmpty( strResponse ) && ( !strResponse.equals( CHECK_CONNEXION_FALSE ) ) )
-             {
-            	 strUID = strResponse.replace("\"", "");
-               }
-         }
-         catch ( ParisConnectAPIException ex )
-         {
-             _logger.warn( ex.getMessage(  ) );
-         }
-    	 
-    	 return strUID;
+        try
+        {
+            String strResponse = ParisConnectAPIService.checkConnectionCookie( strPcuid );
+
+            if ( !StringUtils.isEmpty( strResponse ) && ( !strResponse.equals( CHECK_CONNEXION_FALSE ) ) )
+            {
+                strUID = strResponse.replace( "\"", "" );
+            }
+        }
+        catch ( ParisConnectAPIException ex )
+        {
+            _logger.warn( ex.getMessage(  ) );
+        }
+
+        return strUID;
     }
-    
-  
+
     /**
      * Fill user's data
      * @param user The User
@@ -475,7 +453,8 @@ public final class ParisConnectService
         user.setUserInfo( LuteceUser.HOME_INFO_POSTAL_CITY, joObject.getString( PCUSER_CITY ) );
         user.setUserInfo( LuteceUser.HOME_INFO_POSTAL_POSTALCODE, joObject.getString( PCUSER_ZIPCODE ) );
         user.setUserInfo( LuteceUser.HOME_INFO_POSTAL_STREET, joObject.getString( PCUSER_ADDRESS ) );
-        String strBirthDate = ParisConnectAPIService.getMetadataValue( user.getName(), "birthday" );
+
+        String strBirthDate = ParisConnectAPIService.getMetadataValue( user.getName(  ), "birthday" );
         user.setUserInfo( LuteceUser.BDATE, strBirthDate );
         user.setEmail( joObject.getString( PCUSER_EMAIL ) );
 
@@ -483,20 +462,4 @@ public final class ParisConnectService
         boolean bVerified = "1".equals( strVerified );
         user.setVerified( bVerified );
     }
-    
-    
-    
-    
-    
-    
-    
-    
-   
-    
-   
-    
-    
-    
-
-
 }

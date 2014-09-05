@@ -33,8 +33,10 @@
  */
 package fr.paris.lutece.plugins.mylutece.modules.parisconnect.service;
 
-import java.util.Map;
-import java.util.Map.Entry;
+import fr.paris.lutece.portal.service.util.AppPropertiesService;
+import fr.paris.lutece.util.httpaccess.HttpAccess;
+import fr.paris.lutece.util.httpaccess.HttpAccessException;
+import fr.paris.lutece.util.url.UrlItem;
 
 import net.sf.json.JSON;
 import net.sf.json.JSONException;
@@ -43,10 +45,8 @@ import net.sf.json.JSONSerializer;
 
 import org.apache.log4j.Logger;
 
-import fr.paris.lutece.portal.service.util.AppPropertiesService;
-import fr.paris.lutece.util.httpaccess.HttpAccess;
-import fr.paris.lutece.util.httpaccess.HttpAccessException;
-import fr.paris.lutece.util.url.UrlItem;
+import java.util.Map;
+import java.util.Map.Entry;
 
 
 /**
@@ -168,7 +168,7 @@ public class ParisConnectAPI
     {
         _map = map;
     }
-    
+
     /**
      * Call a Method of the API
      * @param strMethod The method name
@@ -181,7 +181,6 @@ public class ParisConnectAPI
     {
         return callMethod( strMethod, mapParameters, true );
     }
-    
 
     /**
      * Call a Method of the API
@@ -191,7 +190,7 @@ public class ParisConnectAPI
      * @return The string returned by the API
      * @throws ParisConnectAPIException if an error occurs
      */
-    public String callMethod( String strMethod, Map<String, String> mapParameters , boolean bJSON )
+    public String callMethod( String strMethod, Map<String, String> mapParameters, boolean bJSON )
         throws ParisConnectAPIException
     {
         HttpAccess httpAccess = new HttpAccess(  );
@@ -214,26 +213,28 @@ public class ParisConnectAPI
         {
             _logger.error( "Error calling method '" + strMethod + " - " + ex.getMessage(  ), ex );
         }
-        
-        if(strResponse !=null)
+
+        if ( strResponse != null )
         {
-        	boolean bJSONArray = strResponse.startsWith( "[{" );
-	        
-	        // Responses are not always in JSON format and Array should not be checked for errors
-	        if( bJSON && !bJSONArray )
-	        {
-	            checkJSONforErrors( strResponse );
-	        }
+            boolean bJSONArray = strResponse.startsWith( "[{" );
+
+            // Responses are not always in JSON format and Array should not be checked for errors
+            if ( bJSON && !bJSONArray )
+            {
+                checkJSONforErrors( strResponse );
+            }
         }
+
         return strResponse;
     }
-    
+
     /**
      * Ckecks JSON for errors
      * @param strResponse The response in JSON format
      * @throws ParisConnectAPIException if an error occurs
      */
-    private void checkJSONforErrors( String strResponse ) throws ParisConnectAPIException
+    private void checkJSONforErrors( String strResponse )
+        throws ParisConnectAPIException
     {
         JSONObject joObject = (JSONObject) JSONSerializer.toJSON( strResponse );
 
@@ -241,23 +242,26 @@ public class ParisConnectAPI
         {
             String strError = joObject.getString( KEY_ERROR );
             String strMessage;
+
             // ERR value is not always a JSON object
-            try 
+            try
             {
-            	JSON joError=  JSONSerializer.toJSON( strError );
-                if(!joError.isArray())
+                JSON joError = JSONSerializer.toJSON( strError );
+
+                if ( !joError.isArray(  ) )
                 {
-                	strMessage = ((JSONObject )joError).getString( KEY_ERROR_MSG );
+                    strMessage = ( (JSONObject) joError ).getString( KEY_ERROR_MSG );
                 }
                 else
                 {
-                	strMessage=joError.toString();
+                    strMessage = joError.toString(  );
                 }
             }
-            catch( JSONException e )
+            catch ( JSONException e )
             {
                 strMessage = strError;
             }
+
             throw new ParisConnectAPIException( strMessage );
         }
     }
@@ -274,13 +278,13 @@ public class ParisConnectAPI
 
         for ( Entry<String, String> entry : mapParameters.entrySet(  ) )
         {
-            if( entry.getKey().equals( PARAMETER_SECRET_KEY ))
+            if ( entry.getKey(  ).equals( PARAMETER_SECRET_KEY ) )
             {
-                url.addParameter( entry.getKey(), "************" );
+                url.addParameter( entry.getKey(  ), "************" );
             }
             else
             {
-                url.addParameter( entry.getKey(), entry.getValue() );
+                url.addParameter( entry.getKey(  ), entry.getValue(  ) );
             }
         }
 

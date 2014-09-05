@@ -33,9 +33,6 @@
  */
 package fr.paris.lutece.plugins.mylutece.modules.parisconnect.web;
 
-import javax.security.auth.login.LoginException;
-import javax.servlet.http.HttpServletRequest;
-
 import fr.paris.lutece.plugins.mylutece.modules.parisconnect.authentication.ParisConnectAuthentication;
 import fr.paris.lutece.portal.service.security.LuteceUser;
 import fr.paris.lutece.portal.service.security.SecurityService;
@@ -48,10 +45,14 @@ import fr.paris.lutece.util.json.ErrorJsonResponse;
 import fr.paris.lutece.util.json.JsonResponse;
 import fr.paris.lutece.util.json.JsonUtil;
 
+import javax.security.auth.login.LoginException;
+
+import javax.servlet.http.HttpServletRequest;
+
 
 /**
  * MyLuteceParisConnectXPage
- * 
+ *
  */
 @Controller( xpageName = MyLuteceParisConnectXPage.PAGE_MYLUTECE_PARIS_CONNECT, pageTitleI18nKey = "module.mylutece.parisconnect.xpage.myluteceParisConnect.pageTitle", pagePathI18nKey = "module.mylutece.parisconnect.xpage.myluteceParisConnect.pagePathLabel" )
 public class MyLuteceParisConnectXPage extends MVCApplication
@@ -61,111 +62,93 @@ public class MyLuteceParisConnectXPage extends MVCApplication
      */
     public static final String PAGE_MYLUTECE_PARIS_CONNECT = "myluteceParisConnect";
     private static final long serialVersionUID = -4316691400124512414L;
-    
+
     //Parameters
     private static final String PARAMETER_USERNAME = "username";
     private static final String PARAMETER_PASSWORD = "password";
-   
 
     // Views
     private static final String VIEW_IS_USER_AUTHENTICATED = "isUserAuthenticatedJson";
 
-
     // Actions
     private static final String ACTION_DO_LOGIN_JSON = "doLoginJson";
     private static final String TOKEN_ACTION_LOGIN = "dologin";
-    
+
     // Json ERROR CODE
     private static final String JSON_ERROR_AUTHENTICATION_NOT_ENABLE = "AUTHENTICATION_NOT_ENABLE";
     private static final String JSON_ERROR_LOGIN_ERROR = "LOGIN_ERROR";
+    private ParisConnectAuthentication _parisConnectAuthentication = (ParisConnectAuthentication) SpringContextService.getBean( 
+            "mylutece-parisconnect.authentication" );
 
-    
-  	 private ParisConnectAuthentication  _parisConnectAuthentication = (ParisConnectAuthentication) SpringContextService.getBean( 
-             "mylutece-parisconnect.authentication" );
-   
-   
     /**
      * Check if the current user is authenticated
      * @param request The request
      * @return A JSON string  containing  true in the field result if the user is authenticated
      */
-   
     public String isUserAuthenticated( HttpServletRequest request )
     {
-    	
-    	AbstractJsonResponse jsonResponse=null;
-        
-    	LuteceUser user=null;
+        AbstractJsonResponse jsonResponse = null;
+
+        LuteceUser user = null;
+
         if ( SecurityService.isAuthenticationEnable(  ) )
         {
-
             user = SecurityService.getInstance(  ).getRegisteredUser( request );
-            if(user !=null)
+
+            if ( user != null )
             {
-	           jsonResponse=new JsonResponse(Boolean.TRUE);
-	         }
+                jsonResponse = new JsonResponse( Boolean.TRUE );
+            }
             else
             {
-            	 jsonResponse=new JsonResponse(Boolean.FALSE);
+                jsonResponse = new JsonResponse( Boolean.FALSE );
             }
-          
-           }
+        }
         else
         {
-        	jsonResponse=new ParisConnectErrorJsonResponse(JSON_ERROR_AUTHENTICATION_NOT_ENABLE);
-        	
+            jsonResponse = new ParisConnectErrorJsonResponse( JSON_ERROR_AUTHENTICATION_NOT_ENABLE );
         }
-        
-       
-         return JsonUtil.buildJsonResponse(jsonResponse) ; 
+
+        return JsonUtil.buildJsonResponse( jsonResponse );
     }
-    
-    
-    
+
     /**
      * doLoginAuthentication
      * @param request The request
      * @return A JSON string  containing  true in the user is authenticated
      */
-
     public String doLogin( HttpServletRequest request )
     {
-    	
-    	String strUsername = request.getParameter( PARAMETER_USERNAME );
+        String strUsername = request.getParameter( PARAMETER_USERNAME );
         String strPassword = request.getParameter( PARAMETER_PASSWORD );
-        
-    	AbstractJsonResponse jsonResponse=null;
-        
-    	LuteceUser user=null;
+
+        AbstractJsonResponse jsonResponse = null;
+
+        LuteceUser user = null;
+
         if ( SecurityService.isAuthenticationEnable(  ) )
         {
-        	
-        	
-        	
-	        	try {
-	        		user=_parisConnectAuthentication.login(strUsername, strPassword, request);
-					if(user!=null)
-					{
-						SecurityService.getInstance(  ).registerUser( request, user );
-			        	jsonResponse=new JsonResponse(Boolean.TRUE);
-					}
-					
-				} catch (LoginException e) {
-					jsonResponse=new ParisConnectErrorJsonResponse(JSON_ERROR_LOGIN_ERROR,SecurityTokenService.getInstance().getToken(request, TOKEN_ACTION_LOGIN));
-				
+            try
+            {
+                user = _parisConnectAuthentication.login( strUsername, strPassword, request );
+
+                if ( user != null )
+                {
+                    SecurityService.getInstance(  ).registerUser( request, user );
+                    jsonResponse = new JsonResponse( Boolean.TRUE );
+                }
             }
-         }
+            catch ( LoginException e )
+            {
+                jsonResponse = new ParisConnectErrorJsonResponse( JSON_ERROR_LOGIN_ERROR,
+                        SecurityTokenService.getInstance(  ).getToken( request, TOKEN_ACTION_LOGIN ) );
+            }
+        }
         else
         {
-        	jsonResponse=new ParisConnectErrorJsonResponse(JSON_ERROR_AUTHENTICATION_NOT_ENABLE);
-        	
+            jsonResponse = new ParisConnectErrorJsonResponse( JSON_ERROR_AUTHENTICATION_NOT_ENABLE );
         }
-       
-         return JsonUtil.buildJsonResponse(jsonResponse); 
-    }
-    
-    
-    
 
-   
+        return JsonUtil.buildJsonResponse( jsonResponse );
+    }
 }

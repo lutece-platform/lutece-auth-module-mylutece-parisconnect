@@ -108,18 +108,20 @@ public class ParisConnectUser extends LuteceUser
     }
 
     /**
-     * 
+     *
      * @return the user pcuid
      */
-	public String getPCUID() {
-		return _strPCUID;
-	}
+    public String getPCUID(  )
+    {
+        return _strPCUID;
+    }
 
-	/**
-	 * set the user pcuid
-	 * @param _strPcUid the user pcuid
-	 */
-	public void setPCUID(String _strPcUid) {
-		this._strPCUID = _strPcUid;
-	}
+    /**
+     * set the user pcuid
+     * @param _strPcUid the user pcuid
+     */
+    public void setPCUID( String _strPcUid )
+    {
+        this._strPCUID = _strPcUid;
+    }
 }
