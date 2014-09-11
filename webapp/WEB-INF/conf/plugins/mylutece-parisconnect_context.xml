@@ -67,4 +67,18 @@
            <value>(your API secret key)</value>
        </property>
    </bean>
+    <bean id="mylutece-parisconnect.apiMib" class="fr.paris.lutece.plugins.mylutece.modules.parisconnect.service.ParisConnectAPI">
+       <property name="name">
+           <value>mib</value>
+       </property>
+       <property name="url">
+           <value>https://connect.paris.fr/ogc/</value>
+       </property>
+       <property name="apiId">
+           <value></value>
+       </property>
+       <property name="secretKey">
+           <value></value>
+       </property>
+   </bean>
 </beans>

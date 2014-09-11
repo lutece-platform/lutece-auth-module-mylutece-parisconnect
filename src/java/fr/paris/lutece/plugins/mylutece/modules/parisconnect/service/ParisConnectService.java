@@ -436,6 +436,22 @@ public final class ParisConnectService
 
         return strUID;
     }
+    
+    
+    
+    /**
+     * sendAvisMessage
+     * @param strMail the mail	
+     * @param strMessage the message
+     * @param strBackUrl the back url
+     * @return true if there is no problem
+     */
+    public boolean sendAvisMessage(String strMail,String strMessage,String strBackUrl)
+    {
+    		
+    	String strCategory=StringUtils.isEmpty(strMail)?"0":"1";
+    	return ParisConnectAPIService.sendAvisMessage(strMail, strMessage, strCategory,strBackUrl);
+    }
 
     /**
      * Fill user's data

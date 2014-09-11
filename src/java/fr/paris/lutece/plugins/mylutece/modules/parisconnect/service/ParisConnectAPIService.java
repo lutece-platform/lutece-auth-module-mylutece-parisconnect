@@ -67,6 +67,7 @@ public final class ParisConnectAPIService
     private static final String METHOD_UNSUBSCIBE_USER = "unsubscribe_user";
     private static final String METHOD_GET_PCUID_BY_EMAIL = "get_pcuid_by_email";
     private static final String METHOD_SET_ACCOUNT_SHADOW = "set_account_shadow";
+    private static final String METHOD_AVIS= "avisajax.php";
     public static final String PARAMETER_PCUID = "pcuid";
     public static final String PARAMETER_ID_ALERTES = "idalertes";
     public static final String PARAMETER_ID_EMAIL = "id_mail";
@@ -82,12 +83,20 @@ public final class ParisConnectAPIService
     private static final String PARAMETER_LOCATION = "location";
     private static final String PARAMETER_ZIP_CODE = "zip_code";
     private static final String PARAMETER_CITY = "city";
+    private static final String PARAMETER_MESSAGE = "message";
+    private static final String PARAMETER_CATEGORY = "cat";
     private static final String KEY_VALUE = "value";
     private static final String KEY_PCUID = "pcuid";
+    private static final String KEY_SUCCESS = "success";
+    
     private static final ParisConnectAPI _accountAPI = SpringContextService.getBean( "mylutece-parisconnect.apiAccount" );
     private static final ParisConnectAPI _usersAPI = SpringContextService.getBean( "mylutece-parisconnect.apiUsers" );
     private static final ParisConnectAPI _metadataAPI = SpringContextService.getBean( 
             "mylutece-parisconnect.apiMetadata" );
+    
+    private static final ParisConnectAPI _mibAPI = SpringContextService.getBean( 
+            "mylutece-parisconnect.apiMib" );
+    
     private static final ParisConnectAPI _psupAPI = SpringContextService.getBean( "mylutece-parisconnect.apiPsup" );
     private static Logger _logger = org.apache.log4j.Logger.getLogger( Constants.LOGGER_PARISCONNECT );
 
@@ -410,4 +419,45 @@ public final class ParisConnectAPIService
 
         return strPcuid;
     }
+    
+    /**
+     * send Avis Message
+     * @param strMail the mail
+     * @param strMessage the messgae
+     * @return strCategory the category
+     * */
+    static boolean sendAvisMessage( String strMail, String strMessage,String strCategory,String strBackUrl )
+    {
+        Map<String, String> mapParameters = new HashMap<String, String>(  );
+        mapParameters.put( PARAMETER_EMAIL, strMail );
+        mapParameters.put( PARAMETER_MESSAGE, strMessage );
+        mapParameters.put( PARAMETER_CATEGORY, strCategory );
+
+        String strResponse = null;
+
+        try
+        {
+            strResponse = _mibAPI.callMethod( METHOD_AVIS+"?url="+strBackUrl, mapParameters, false );
+            JSONObject jo = (JSONObject) JSONSerializer.toJSON( strResponse );
+            if(jo.containsKey(KEY_SUCCESS))
+            {
+            	
+            	return true;
+            	
+            }
+            
+        }
+        catch ( ParisConnectAPIException ex )
+        {
+            _logger.warn( "Account MIB  API call : mail=" + strMail + " - " + ex.getMessage(  ) );
+        }
+        catch ( JSONException ex )
+        {
+            _logger.error( "Account MIB  API call : mail=" + strMail + " - " + ex.getMessage(  ) );
+        }
+
+        return false;
+    }
+    
+    
 }
