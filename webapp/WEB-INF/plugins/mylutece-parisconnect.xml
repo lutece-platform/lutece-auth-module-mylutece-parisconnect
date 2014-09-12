@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1" standalone="no"?><plug-in>
    <name>mylutece-parisconnect</name>
    <class>fr.paris.lutece.plugins.mylutece.modules.parisconnect.service.ParisConnectPlugin</class>
-   <version>1.0.1-SNAPSHOT</version>
+   <version>1.0.1</version>
    <description>module.mylutece.parisconnect.module.description</description>
    <documentation/>
    <installation/>
