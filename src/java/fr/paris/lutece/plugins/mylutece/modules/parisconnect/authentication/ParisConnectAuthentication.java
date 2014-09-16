@@ -103,12 +103,12 @@ public class ParisConnectAuthentication extends PortalAuthentication
         throws LoginException
     {
         //test token 
-        if ( !SecurityTokenService.getInstance(  ).validate( request, TOKEN_ACTION_LOGIN ) )
-        {
-            AppLogService.error( "ParisConnectAuthentication: Token not validated" );
-            throw new FailedLoginException( I18nService.getLocalizedString( PROPERTY_MESSAGE_FAILED_LOGIN,
-                    request.getLocale(  ) ) );
-        }
+//        if ( !SecurityTokenService.getInstance(  ).validate( request, TOKEN_ACTION_LOGIN ) )
+//        {
+//            AppLogService.error( "ParisConnectAuthentication: Token not validated" );
+//            throw new FailedLoginException( I18nService.getLocalizedString( PROPERTY_MESSAGE_FAILED_LOGIN,
+//                    request.getLocale(  ) ) );
+//        }
 
         LuteceUser user = ParisConnectService.getInstance(  ).doLogin( request, strUserName, strUserPassword, this );
 

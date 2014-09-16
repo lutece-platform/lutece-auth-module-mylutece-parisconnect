@@ -40,6 +40,15 @@ package fr.paris.lutece.plugins.mylutece.modules.parisconnect.service;
 public class ParisConnectAPIException extends Exception
 {
     /**
+	 * 
+	 */
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -2375566306839951530L;
+
+	/**
      * The constructor
      * @param strMessage The Message
      */

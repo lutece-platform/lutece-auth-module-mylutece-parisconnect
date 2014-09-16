@@ -66,6 +66,8 @@ public final class ParisConnectAPIService
     private static final String METHOD_SUBSCIBE_USER = "subscribe_user";
     private static final String METHOD_UNSUBSCIBE_USER = "unsubscribe_user";
     private static final String METHOD_GET_PCUID_BY_EMAIL = "get_pcuid_by_email";
+    private static final String METHOD_IS_VERIFIED = "is_verified";
+    private static final String METHOD_VERIFICATION = "verification";
     private static final String METHOD_SET_ACCOUNT_SHADOW = "set_account_shadow";
     private static final String METHOD_AVIS= "avisajax.php";
     public static final String PARAMETER_PCUID = "pcuid";
@@ -85,9 +87,18 @@ public final class ParisConnectAPIService
     private static final String PARAMETER_CITY = "city";
     private static final String PARAMETER_MESSAGE = "message";
     private static final String PARAMETER_CATEGORY = "cat";
+    private static final String PARAMETER_RETURN_URL = "returnUrl";
     private static final String KEY_VALUE = "value";
+    private static final String KEY_DATA = "data";
     private static final String KEY_PCUID = "pcuid";
     private static final String KEY_SUCCESS = "success";
+    private static final String KEY_SUCCES = "succes";
+    private static final String KEY_STATUS = "status";
+    
+    private static final String KEY_IS_VERIFIED = "is_verified";
+    private static final String KEY_MESSAGE = "message";
+    
+    
     
     private static final ParisConnectAPI _accountAPI = SpringContextService.getBean( "mylutece-parisconnect.apiAccount" );
     private static final ParisConnectAPI _usersAPI = SpringContextService.getBean( "mylutece-parisconnect.apiUsers" );
@@ -454,6 +465,99 @@ public final class ParisConnectAPIService
         catch ( JSONException ex )
         {
             _logger.error( "Account MIB  API call : mail=" + strMail + " - " + ex.getMessage(  ) );
+        }
+
+        return false;
+    }
+    
+    
+    /**
+     * return true if the user has verified his account
+     * @param strPcuid the pcuid
+     * @return true if the user has verified his account
+     */
+    static boolean isVerified( String strPcuid )
+    {
+        Map<String, String> mapParameters = new HashMap<String, String>(  );
+        mapParameters.put( PARAMETER_PCUID, strPcuid );
+       
+        String strResponse = null;
+
+        try
+        {
+            strResponse = _usersAPI.callMethod( METHOD_IS_VERIFIED, mapParameters, true );
+
+            JSONObject jo = (JSONObject) JSONSerializer.toJSON( strResponse );
+            if(jo.containsKey(KEY_STATUS) && jo.getString(KEY_STATUS).equals(KEY_SUCCES) )
+            {
+            	 
+            	
+            	if(((JSONObject)jo.get(KEY_DATA)).getString(KEY_IS_VERIFIED).equals("\"1\""))
+            	{
+            		return true;
+            	}
+            }
+            else
+            {
+         
+            	 _logger.error( "Is Verified  API call : strPcuid=" + strPcuid + " - " + jo.getString(KEY_MESSAGE) );
+            	
+            }
+            
+         }
+        catch ( ParisConnectAPIException ex )
+        {
+            _logger.warn( "Is Verified  API call : strPcuid=" + strPcuid + " - " + ex.getMessage(  ) );
+        }
+        catch ( JSONException ex )
+        {
+            _logger.error( "Is Verified  API call : strPcuid=" + strPcuid + " - " + ex.getMessage(  ) );
+        }
+
+        return false;
+    }
+    
+    
+    /**
+     * return true if a mail of confirmation have been send to the user
+     * @param strMail the user email
+     * @param strReturnUrl the user back url
+     * @return true if a mail of confirmation have been send to the user
+     */
+    static boolean verification( String strMail,String strReturnUrl )
+    {
+        Map<String, String> mapParameters = new HashMap<String, String>(  );
+        mapParameters.put( PARAMETER_EMAIL, strMail );
+        mapParameters.put( PARAMETER_RETURN_URL, strReturnUrl );
+        String strResponse = null;
+
+        try
+        {
+            strResponse = _usersAPI.callMethod( METHOD_VERIFICATION, mapParameters, true );
+          
+        	
+            JSONObject jo = (JSONObject) JSONSerializer.toJSON( strResponse );
+            if(jo.containsKey(KEY_STATUS) && jo.getString(KEY_STATUS).equals(KEY_SUCCESS) )
+            {
+            	if(jo.getString(KEY_DATA).equals("true"))
+            	{
+            		return true;
+            	}
+            }
+            else
+            {
+            	 _logger.error( "Verification  API call : strMail=" + strMail + " - " + jo.getString(KEY_MESSAGE) );
+            	
+            }
+            
+         }
+        catch ( ParisConnectAPIException ex )
+        {
+            _logger.warn( "Verification  API call : strMail=" + strMail + " - " + ex.getMessage(  ) );
+        }
+        catch ( JSONException ex )
+        {
+            _logger.error( "Verification  API call : strMail=" + strMail + " - " + ex.getMessage(  ) );
         }
 
         return false;

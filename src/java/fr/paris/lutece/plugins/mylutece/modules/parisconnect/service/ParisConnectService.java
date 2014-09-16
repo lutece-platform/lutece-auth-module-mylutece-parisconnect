@@ -33,6 +33,9 @@
  */
 package fr.paris.lutece.plugins.mylutece.modules.parisconnect.service;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import fr.paris.lutece.plugins.mylutece.authentication.MultiLuteceAuthentication;
 import fr.paris.lutece.plugins.mylutece.modules.parisconnect.authentication.ParisConnectAuthentication;
 import fr.paris.lutece.plugins.mylutece.modules.parisconnect.authentication.ParisConnectUser;
@@ -40,6 +43,7 @@ import fr.paris.lutece.portal.service.security.LuteceUser;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 
+import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
 
@@ -435,6 +439,30 @@ public final class ParisConnectService
         }
 
         return strUID;
+    }
+    
+    
+    /**
+     * return true if the user has verified his account
+     * @param strPcuid the pcuid
+     * @return true if the user has verified his account
+     */
+    public boolean isVerified( String strPcuid )
+    {
+       
+    	return ParisConnectAPIService.isVerified(strPcuid);
+    }
+    
+    
+    /**
+     * return true if a mail of confirmation have been send to the user
+     * @param strMail the user email
+     * @param strReturnUrl the user back url
+     * @return true if a mail of confirmation have been send to the user
+     */
+    public boolean verification( String strMail,String strReturnUrl )
+    {
+        return ParisConnectAPIService.verification(strMail, strReturnUrl);
     }
     
     
