@@ -492,7 +492,7 @@ public final class ParisConnectAPIService
             {
             	 
             	
-            	if(((JSONObject)jo.get(KEY_DATA)).getString(KEY_IS_VERIFIED).equals("\"1\""))
+            	if(((JSONObject)jo.get(KEY_DATA)).getString(KEY_IS_VERIFIED).equals("1"))
             	{
             		return true;
             	}
