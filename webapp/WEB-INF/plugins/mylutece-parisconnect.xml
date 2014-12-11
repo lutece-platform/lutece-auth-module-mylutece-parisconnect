@@ -43,8 +43,20 @@
     <page-include-services>
         <page-include-service>
             <page-include-service-id>parisConnectPopup</page-include-service-id>
-            <page-include-service-class>fr.paris.lutece.plugins.mylutece.modules.parisconnect.web.ParisConnectPopupInclude</page-include-service-class>
+            <page-include-service-class>fr.paris.lutece.plugins.mylutece.modules.parisconnect.web.PopupInclude</page-include-service-class>
+         </page-include-service>
+         <page-include-service>
+            <page-include-service-id>alertes</page-include-service-id>
+            <page-include-service-class>fr.paris.lutece.plugins.mylutece.modules.parisconnect.web.AlerteInclude</page-include-service-class>
         </page-include-service>	
+        <page-include-service>
+            <page-include-service-id>mib</page-include-service-id>
+            <page-include-service-class>fr.paris.lutece.plugins.mylutece.modules.parisconnect.web.MIBInclude</page-include-service-class>
+        </page-include-service>		
+         <page-include-service>
+            <page-include-service-id>avis</page-include-service-id>
+            <page-include-service-class>fr.paris.lutece.plugins.mylutece.modules.parisconnect.web.AvisInclude</page-include-service-class>
+        </page-include-service>        
      </page-include-services>
      <!-- javascript -->
      <javascript-files>

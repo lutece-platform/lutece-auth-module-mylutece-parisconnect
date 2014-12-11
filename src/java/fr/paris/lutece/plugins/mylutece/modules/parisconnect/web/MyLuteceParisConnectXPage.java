@@ -33,7 +33,14 @@
  */
 package fr.paris.lutece.plugins.mylutece.modules.parisconnect.web;
 
+import javax.security.auth.login.LoginException;
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang.StringUtils;
+
 import fr.paris.lutece.plugins.mylutece.modules.parisconnect.authentication.ParisConnectAuthentication;
+import fr.paris.lutece.plugins.mylutece.modules.parisconnect.service.ParisConnectService;
+import fr.paris.lutece.portal.service.datastore.DatastoreService;
 import fr.paris.lutece.portal.service.security.LuteceUser;
 import fr.paris.lutece.portal.service.security.SecurityService;
 import fr.paris.lutece.portal.service.security.SecurityTokenService;
@@ -41,13 +48,8 @@ import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.util.mvc.xpage.MVCApplication;
 import fr.paris.lutece.portal.util.mvc.xpage.annotations.Controller;
 import fr.paris.lutece.util.json.AbstractJsonResponse;
-import fr.paris.lutece.util.json.ErrorJsonResponse;
 import fr.paris.lutece.util.json.JsonResponse;
 import fr.paris.lutece.util.json.JsonUtil;
-
-import javax.security.auth.login.LoginException;
-
-import javax.servlet.http.HttpServletRequest;
 
 
 /**
@@ -63,20 +65,34 @@ public class MyLuteceParisConnectXPage extends MVCApplication
     public static final String PAGE_MYLUTECE_PARIS_CONNECT = "myluteceParisConnect";
     private static final long serialVersionUID = -4316691400124512414L;
 
+    //TOKEN
+    public static final String  TOKEN_DO_SEND_AVIS ="doSendAvis";
+	public static final String  TOKEN_DO_SUBSCRIBE_ALERT ="doSubscribeAlert";
+	private static final String TOKEN_DO_LOGIN = "dologin";
     //Parameters
     private static final String PARAMETER_USERNAME = "username";
     private static final String PARAMETER_PASSWORD = "password";
-
+    private static final String PARAMETER_MAIL = "mail";
+    private static final String PARAMETER_MESSAGE = "message";
     // Views
     private static final String VIEW_IS_USER_AUTHENTICATED = "isUserAuthenticatedJson";
 
     // Actions
     private static final String ACTION_DO_LOGIN_JSON = "doLoginJson";
-    private static final String TOKEN_ACTION_LOGIN = "dologin";
+    
 
     // Json ERROR CODE
     private static final String JSON_ERROR_AUTHENTICATION_NOT_ENABLE = "AUTHENTICATION_NOT_ENABLE";
     private static final String JSON_ERROR_LOGIN_ERROR = "LOGIN_ERROR";
+    private static final String JSON_ERROR_DURING_SUBSCRIBED = "ERROR_DURING_SUBSCRIBED";
+    private static final String JSON_ERROR_DURING_SEND_AVIS = "ERROR_DURING_SEND_AVIS";
+    private static final String JSON_ERROR_USER_ALREADY_SUBSCRIBED = "ERROR_USER_ALREADY_SUBSCRIBED";
+   // key
+    private static final String KEY_SUSBCIBE_ID_ALERTE="module.mylutece.parisconnect.site_property.subscribe_id_alerte";
+    private static final String KEY_CREATE_ACCOUNT_ID_MAIL="module.mylutece.parisconnect.site_property.create_account_id_mail";
+    private static final String KEY_SEND_AVIS_BACK_URL="module.mylutece.parisconnect.site_property.send_avis_back_url";
+ 
+   
     private ParisConnectAuthentication _parisConnectAuthentication = (ParisConnectAuthentication) SpringContextService.getBean( 
             "mylutece-parisconnect.authentication" );
 
@@ -141,7 +157,7 @@ public class MyLuteceParisConnectXPage extends MVCApplication
             catch ( LoginException e )
             {
                 jsonResponse = new ParisConnectErrorJsonResponse( JSON_ERROR_LOGIN_ERROR,
-                        SecurityTokenService.getInstance(  ).getToken( request, TOKEN_ACTION_LOGIN ) );
+                        SecurityTokenService.getInstance(  ).getToken( request, TOKEN_DO_LOGIN ) );
             }
         }
         else
@@ -151,4 +167,115 @@ public class MyLuteceParisConnectXPage extends MVCApplication
 
         return JsonUtil.buildJsonResponse( jsonResponse );
     }
+    
+    
+    /**
+     * Do subscribe a user by mail
+     * using the AJAX mode
+     * @param request The request
+     */
+    public String doSubscribeAlert( HttpServletRequest request )
+    {
+    	 String strMail = request.getParameter( PARAMETER_MAIL );
+    	 AbstractJsonResponse jsonResponse=null;
+         
+    	 
+//    	 if( !SecurityTokenService.getInstance().validate(request, TOKEN_DO_SUBSCRIBE_ALERT) )
+//    		 
+//    	 {
+//    		 
+//           AppLogService.error( "doSubscribeAlert: Token not validated" );
+//           
+//    	 }
+//    	 
+//    	 else 
+    	 if( StringUtils.isNotEmpty(strMail) )
+    	 {
+	    	  String strPcuid= ParisConnectService.getInstance().getPcuidByEmail(strMail);
+	    	  //the user doesn't exist
+	    	  if( StringUtils.isEmpty(strPcuid))
+	    	  {
+	    		  String stridMailToSend=DatastoreService.getDataValue(KEY_CREATE_ACCOUNT_ID_MAIL,"0");
+	    		  strPcuid= ParisConnectService.getInstance().setAccountShadow(strMail, stridMailToSend);
+	    	  }
+	    	  
+	    	  
+	    	  if( StringUtils.isNotEmpty(strPcuid))
+	    	  {	  
+	    		  String strSubscribeIdAlerte=DatastoreService.getDataValue(KEY_SUSBCIBE_ID_ALERTE,"91");
+	    		  String strErrorSubscribe=ParisConnectService.getInstance().subscribeUser(strPcuid, strSubscribeIdAlerte);
+	    		   
+	    		  if(strErrorSubscribe == null)
+	    		  {
+	    			  
+	    			  String strUserUid=ParisConnectService.getInstance().getUidByPcuid(strPcuid);
+	    			 
+	    			  
+	    			  jsonResponse=new JsonResponse(new ParisConnectResponse(Boolean.TRUE,SecurityTokenService.getInstance().getToken(request, TOKEN_DO_SUBSCRIBE_ALERT)));
+	    			  
+	    		  }
+	    		  else if(ParisConnectService.ERROR_ALREADY_SUBSCRIBE.equals(strErrorSubscribe))
+	    		  {
+	    			  jsonResponse=new ParisConnectErrorJsonResponse(JSON_ERROR_USER_ALREADY_SUBSCRIBED,SecurityTokenService.getInstance().getToken(request, TOKEN_DO_SUBSCRIBE_ALERT));
+	    		  }
+	    		  else
+	    		  {
+	    			  jsonResponse=new ParisConnectErrorJsonResponse(JSON_ERROR_DURING_SUBSCRIBED,SecurityTokenService.getInstance().getToken(request, TOKEN_DO_SUBSCRIBE_ALERT));
+	    			  
+	    		  }
+	    			 
+	    		  
+	    	  
+	    	  }
+    	 }    	  
+	    	  
+    	  if(jsonResponse == null)
+    	  {
+    		  jsonResponse=new ParisConnectErrorJsonResponse(JSON_ERROR_DURING_SUBSCRIBED,SecurityTokenService.getInstance().getToken(request, TOKEN_DO_SUBSCRIBE_ALERT));
+         }
+	 
+	                 
+          return JsonUtil.buildJsonResponse(jsonResponse) ; 
+    }
+    
+    
+    /**
+     * DoSend Avis
+     * using the AJAX mode
+     * @param request The request
+     */
+    public String doSendAvis(HttpServletRequest request )
+    {
+    	 String strMail = request.getParameter( PARAMETER_MAIL );
+    	 String strMessage = request.getParameter( PARAMETER_MESSAGE );
+    	 String strBackUrl=DatastoreService.getDataValue(KEY_SEND_AVIS_BACK_URL,"");
+    	 AbstractJsonResponse jsonResponse=null;
+    	 
+    	 
+//    	 if(SecurityTokenService.getInstance().validate(request, TOKEN_DO_SEND_AVIS) )    	    	 
+//        		 
+//        	 {
+//        		 
+//               AppLogService.error( "doSubscribeAlert: Token not validated" );
+//               
+//        	jsonResponse=new BudgetErrorJsonResponse(JSON_ERROR_DURING_SEND_AVIS,SecurityTokenService.getInstance().getToken(request, TOKEN_DO_SEND_AVIS));
+    	 
+//    }else
+//        	 
+//        	 
+    	 
+    	 if( StringUtils.isNotEmpty(strMessage) && ParisConnectService.getInstance().sendAvisMessage(strMail, strMessage,strBackUrl) )
+    	 {
+	    	 jsonResponse=new JsonResponse(new ParisConnectResponse(Boolean.TRUE,SecurityTokenService.getInstance().getToken(request, TOKEN_DO_SEND_AVIS)));
+	    	
+    	 }    	  
+    	 else
+    	 {
+    	   jsonResponse=new ParisConnectErrorJsonResponse(JSON_ERROR_DURING_SEND_AVIS,SecurityTokenService.getInstance().getToken(request, TOKEN_DO_SEND_AVIS));
+         }
+	 
+	                 
+          return JsonUtil.buildJsonResponse(jsonResponse) ; 
+    }
+    
 }

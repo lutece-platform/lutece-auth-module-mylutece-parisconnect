@@ -3,7 +3,8 @@
 
 <beans>
     <bean id="mylutece-parisconnect.authentication" class="fr.paris.lutece.plugins.mylutece.modules.parisconnect.authentication.ParisConnectAuthentication"/>
-
+  	<bean id="mylutece-parisconnect.parisConnectSitePropertiesGroup" class="fr.paris.lutece.plugins.mylutece.modules.parisconnect.service.ParisConnectSitePropertiesGroup" />
+   
     <bean id="mylutece-parisconnect.apiAccount" class="fr.paris.lutece.plugins.mylutece.modules.parisconnect.service.ParisConnectAPI">
         <property name="name">
             <value>account</value>

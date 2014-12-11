@@ -33,8 +33,15 @@
  */
 package fr.paris.lutece.plugins.mylutece.modules.parisconnect.service;
 
-import java.util.HashMap;
-import java.util.Map;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import net.sf.json.JSONObject;
+import net.sf.json.JSONSerializer;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 import fr.paris.lutece.plugins.mylutece.authentication.MultiLuteceAuthentication;
 import fr.paris.lutece.plugins.mylutece.modules.parisconnect.authentication.ParisConnectAuthentication;
@@ -42,18 +49,6 @@ import fr.paris.lutece.plugins.mylutece.modules.parisconnect.authentication.Pari
 import fr.paris.lutece.portal.service.security.LuteceUser;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
-
-import net.sf.json.JSONException;
-import net.sf.json.JSONObject;
-import net.sf.json.JSONSerializer;
-
-import org.apache.commons.lang.StringUtils;
-
-import org.apache.log4j.Logger;
-
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 
 /**

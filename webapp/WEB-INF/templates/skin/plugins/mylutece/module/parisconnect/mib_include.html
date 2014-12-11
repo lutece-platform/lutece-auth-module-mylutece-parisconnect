@@ -1,0 +1,42 @@
+<div class="bg-color3 mib-container">
+	<div class="title1">
+		<img class="img-responsive mib-container-title-img" src="document?id=47&id_attribute=43" title="Une question ?" alt="Une question ?">
+		<span class="mib-container-title">Une&nbsp;question&nbsp;?</span>
+	</div>
+	<form role="form" method="post" id="form-mib">
+	<input type="hidden" name="token" value="${token}" id="token-form-mib">
+	  <div class="form-group">
+		<div class="col-md-12">
+			<label for="message" class="content-type1">Avez-vous une question sur les projets ? Besoin d'aide pour  voter ? Exprimez-vous ci-dessous, des experts de la Mairie de Paris vous r&eacute;pondront personnellement.</label>
+		</div>	
+		<div class="col-md-12">
+			<textarea class="form-control" rows="3" class="form-control" data-validation="required"  required="required"  name="message" id="message-mib"></textarea>
+			 <span class="messages_errors_div_text messages_errors_message" > </span>
+		</div>
+	  </div>
+	  <div class="form-group">
+		<div class="col-md-12">
+			<label for="email" class="mib-email-label">Veuillez saisir votre adresse &eacute;lectronique <span style="font-weight:normal;">pour obtenir une r&eacute;ponse : </span></label>
+		</div>	
+		<div class="col-md-12">
+			<input class="form-control" type="email"  data-validation="custom" placeholder="Votre adresse email" value="${user_email!}" name="email-mib" id="email-mib">
+			<span class="messages_errors_div_text messages_errors_mail" > </span>
+		</div>
+	</div>
+	  <div class="form-group">
+		<div class="col-md-12">
+			<button class="btn btn-block btn-include" type="submit" id="btn-submit-mib" data-loading-text="En cours...">Je pose ma question</button>
+			<span class="messages_infos_div_text"> </span>
+		</div>
+	  </div>
+	</form>
+	<p>Gr&acirc;ce &agrave; votre messagerie <strong>Paris Connect</strong>, gardez un historique de vos contacts avec la ville.</p>
+</div>
+
+<script type="text/javascript">
+	$(document).ready(function(){
+		
+		addControlOnFormMib();
+		
+	});
+</script>

@@ -1,0 +1,32 @@
+<form class="form-horizontal avis-container" role="form" method="post" id="form-avis" >
+	<input type="hidden" name="token" value="${token}" id="token-form-avis">
+	<div class="avis-container-title centered">
+		<span class="title2">Un avis ?</span>                                    
+    </div>
+    <div class="row avis-container-content">
+		<div class="col-xs-12 col-sm-12  col-md-offset-1 col-md-10">
+			<p class="avis-container-firsttext">
+				Des id&eacute;es ? Des suggestions ? Exprimez-vous ci-dessous, votre avis nous int&eacute;resse.
+			</p>
+			<input type="hidden" value="${user_email!}" name="email-avis" id="email-avis">            
+			<div class="form-group">
+				<label class="sr-only" for="message">Avis</label>
+				<textarea name="message" id="message-avis" rows="5" class="form-control" required="required"></textarea>
+				<span class="messages_errors_div_text" > </span>
+			</div>
+			<div class="form-group">
+				<button class="btn-block btn-lg btn-include" id="btn-submit-avis" type="submit" data-loading-text="En cours...">Je donne mon avis</button>          
+				<span class="messages_infos_div_text"> </span>
+			</div>	
+		</div>	
+    </div>
+</form>
+<script type="text/javascript">
+	$(document).ready(function(){
+			addControlOnFormAvis();
+		});
+</script>
+
+
+
+
