@@ -23,6 +23,7 @@ import fr.paris.lutece.util.html.HtmlTemplate;
 public class ParisConnectIncludeService {
 
 
+	public static final String EMPTY_STRING="";
 	public static final String  TOKEN_DO_SEND_AVIS ="doSendAvis";
 	public static final String  TOKEN_DO_SUBSCRIBE_ALERT ="doSubscribeAlert";
 	
@@ -62,7 +63,7 @@ public class ParisConnectIncludeService {
         {      
             model.put( MARK_USER_EMAIL, user.getEmail() );            
         }                         
-        model.put(SecurityTokenService.MARK_TOKEN,SecurityTokenService.getInstance().getToken(request, TOKEN_DO_SUBSCRIBE_ALERT));
+        model.put(SecurityTokenService.MARK_TOKEN,request!=null?SecurityTokenService.getInstance().getToken(request, TOKEN_DO_SUBSCRIBE_ALERT):EMPTY_STRING);
         HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_ALERTE_INCLUDE, locale, model );
 
         return template.getHtml(  );
@@ -87,7 +88,7 @@ public class ParisConnectIncludeService {
             model.put( MARK_USER_EMAIL, user.getEmail() );            
         }
         model.put(MARK_MIB_URL, strMibUrl);
-        model.put(SecurityTokenService.MARK_TOKEN,SecurityTokenService.getInstance().getToken(request, TOKEN_DO_SEND_AVIS));
+        model.put(SecurityTokenService.MARK_TOKEN,request!=null?SecurityTokenService.getInstance().getToken(request, TOKEN_DO_SEND_AVIS):EMPTY_STRING);
         
         
         HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_AVIS_INCLUDE,locale,model );  
@@ -117,7 +118,7 @@ public class ParisConnectIncludeService {
               model.put( MARK_USER_EMAIL, user.getEmail() );            
           }   
           model.put(MARK_MIB_URL, strMibUrl);
-          model.put(SecurityTokenService.MARK_TOKEN,SecurityTokenService.getInstance().getToken(request, TOKEN_DO_SEND_AVIS));
+          model.put(SecurityTokenService.MARK_TOKEN,request!=null?SecurityTokenService.getInstance().getToken(request, TOKEN_DO_SEND_AVIS):EMPTY_STRING);
 
 
           HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_MIB_INCLUDE, locale, model );
