@@ -203,7 +203,10 @@ public class ParisConnectAPI
         try
         {
             strResponse = httpAccess.doPost( url.getUrl(  ), mapParameters );
-
+            if(strResponse!=null)
+            {
+            	strResponse=strResponse.trim();
+            }
             if ( _bDebug )
             {
                 _logger.debug( "API call : " + getCallUrl( url.getUrl(  ), mapParameters ) );
